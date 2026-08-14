@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "bubblewrap_version": "bubblewrap 0.11.1",
+    "corpus_case_count": 59,
+    "corpus_version": "11A.1",
+    "git_commit": "b94d373884fb4f737cdf4f07cc7eccf08ffb8252",
+    "platform": "Linux-x86_64",
+    "policy_fingerprint": "717ac1bbbea13acc61c47a241673ee05616c241318e2c0c691240995f2bf9333",
+    "policy_version": "1.0.1",
+    "python_version": "3.14.4",
+    "qpdf_version": "qpdf version 12.3.2",
+    "sanitizer_fingerprint": "46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2",
+    "sanitizer_version": "1.0.0",
+    "timestamp": "2026-08-14T23:35:38.843095Z",
+    "worker_dependency_versions": {
+      "PyMuPDF": "1.28.2",
+      "defusedxml": "0.7.1",
+      "olefile": "0.47",
+      "oletools": "0.60.2",
+      "pikepdf": "10.11.0",
+      "yara-python": "4.5.4"
+    },
+    "yara_rule_pack_sha256": "7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7",
+    "yara_rule_pack_version": "2026.08.1"
+  },
+  "metrics": {
+    "benign_allow_rate": {
+      "denominator": 18,
+      "numerator": 18,
+      "value": 1.0
+    },
+    "benign_escalation_rate": {
+      "denominator": 18,
+      "numerator": 0,
+      "value": 0.0
+    },
+    "cdr_recovery_rate": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0
+    },
+    "completeness_counts": {
+      "COMPLETE": 44,
+      "INTENTIONAL_PARTIAL": 10,
+      "OTHER_FAIL_CLOSED": 1,
+      "PARSER_FAILURE": 3,
+      "RESOURCE_LIMIT_FAILURE": 1
+    },
+    "decision_compliance_rate": {
+      "denominator": 59,
+      "numerator": 59,
+      "value": 1.0
+    },
+    "fail_secure_rate": {
+      "denominator": 9,
+      "numerator": 9,
+      "value": 1.0
+    },
+    "finding_level_recall": {
+      "denominator": 72,
+      "numerator": 72,
+      "value": 1.0
+    },
+    "finding_level_recall_by_category": {
+      "BENIGN_ARCHIVE": {
+        "denominator": 0,
+        "numerator": 0,
+        "value": null
+      },
+      "BENIGN_OFFICE": {
+        "denominator": 0,
+        "numerator": 0,
+        "value": null
+      },
+      "BENIGN_PDF": {
+        "denominator": 0,
+        "numerator": 0,
+        "value": null
+      },
+      "FILE_IDENTITY": {
+        "denominator": 6,
+        "numerator": 6,
+        "value": 1.0
+      },
+      "RISKY_ARCHIVE": {
+        "denominator": 17,
+        "numerator": 17,
+        "value": 1.0
+      },
+      "RISKY_OFFICE": {
+        "denominator": 27,
+        "numerator": 27,
+        "value": 1.0
+      },
+      "RISKY_PDF": {
+        "denominator": 17,
+        "numerator": 17,
+        "value": 1.0
+      },
+      "YARA": {
+        "denominator": 5,
+        "numerator": 5,
+        "value": 1.0
+      }
+    },
+    "latency": {
+      "count": 59,
+      "max_ms": 590,
+      "mean_ms": 288.8813559322034,
+      "median_ms": 317.0,
+      "min_ms": 136,
+      "p95_ms": 386
+    },
+    "matched_case_count": 59,
+    "risky_case_detection_recall": {
+      "denominator": 41,
+      "numerator": 41,
+      "value": 1.0
+    },
+    "total_case_count": 59
+  }
+}

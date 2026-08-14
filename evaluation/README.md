@@ -42,8 +42,13 @@ python -m scripts.run_evaluation --execute --case-id PDF-BEN-001 --output-dir /t
 ```
 
 `--execute` always requires explicit `--case-id` values; there is no "run everything"
-flag in Phase 11A. Full-corpus execution against the production Bubblewrap backend is
-Phase 11B's job.
+flag.
+
+The official Phase 11B full-corpus benchmark (real Bubblewrap backend, all 59 cases)
+was executed once against the frozen `11A.1` manifest; its retained artifacts live
+under `evaluation/results/phase11b/` (`results.json`, `results.csv`, `metrics.json`,
+`report.md`, `resilience_sequence.json`). See [docs/EVALUATION.md](../docs/EVALUATION.md)
+for the full analysis.
 
 ## Tests
 

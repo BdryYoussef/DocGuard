@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "bubblewrap_version": "bubblewrap 0.11.1",
+    "corpus_case_count": 59,
+    "corpus_version": "11A.1",
+    "git_commit": "b94d373884fb4f737cdf4f07cc7eccf08ffb8252",
+    "platform": "Linux-x86_64",
+    "policy_fingerprint": "717ac1bbbea13acc61c47a241673ee05616c241318e2c0c691240995f2bf9333",
+    "policy_version": "1.0.1",
+    "python_version": "3.14.4",
+    "qpdf_version": "qpdf version 12.3.2",
+    "sanitizer_fingerprint": "46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2",
+    "sanitizer_version": "1.0.0",
+    "timestamp": "2026-08-14T23:36:21.540191Z",
+    "worker_dependency_versions": {
+      "PyMuPDF": "1.28.2",
+      "defusedxml": "0.7.1",
+      "olefile": "0.47",
+      "oletools": "0.60.2",
+      "pikepdf": "10.11.0",
+      "yara-python": "4.5.4"
+    },
+    "yara_rule_pack_sha256": "7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7",
+    "yara_rule_pack_version": "2026.08.1"
+  },
+  "results": [
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-001",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 263,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-002",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 236,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_MALFORMED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-012",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "PARSER_FAILURE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_MALFORMED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 245,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    }
+  ]
+}

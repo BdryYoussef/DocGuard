@@ -34,6 +34,7 @@ from evaluation.corpus import CORPUS_VERSION, materialize_case
 from evaluation.manifest import ManifestValidationError, load_manifest
 from evaluation.models import (
     AnalysisCompletenessClass,
+    CdrEvaluationOutcome,
     EvaluationCase,
     EvaluationResult,
     EvaluationRun,
@@ -205,8 +206,73 @@ async def _execute_cases(
                         _error_result(case, f"unexpected status {response.status_code}", latency_ms)
                     )
                     continue
-                results.append(_result_from_payload(case, response.json(), latency_ms))
+                payload = response.json()
+                result = _result_from_payload(case, payload, latency_ms)
+                if case.cdr_case:
+                    try:
+                        cdr_outcome = await _run_cdr_follow_up(client, csrf, payload)
+                        result = result.model_copy(update={"cdr_outcome": cdr_outcome})
+                    except (httpx.HTTPError, KeyError, ValueError) as exc:
+                        result = result.model_copy(
+                            update={
+                                "notes": (
+                                    result.notes
+                                    + f" CDR follow-up failed: {type(exc).__name__}: {exc}"
+                                ).strip()
+                            }
+                        )
+                results.append(result)
     return results
+
+
+async def _run_cdr_follow_up(
+    client: httpx.AsyncClient, csrf: str, source_payload: dict[str, object]
+) -> CdrEvaluationOutcome:
+    """Request CDR for a just-uploaded source scan and observe the real outcome:
+    eligibility (inferred from the sanitize response), the derived scan's decision and
+    release eligibility (fetched fresh), and whether the source scan's own decision
+    remained unchanged. Never mutates the source; only ever reads it back."""
+    from tests.auth_helpers import csrf_headers
+
+    scan_id = str(source_payload["scan_id"])
+    source_decision = Decision(str(source_payload["decision"]))
+
+    sanitize_response = await client.post(
+        f"/api/v1/scans/{scan_id}/sanitize", headers=csrf_headers(csrf)
+    )
+    body: dict[str, object] = (
+        sanitize_response.json() if sanitize_response.status_code in (200, 409) else {}
+    )
+    approved = bool(body.get("approved"))
+    failure_code = body.get("failure_code")
+    derived_scan_id_raw = body.get("derived_scan_id")
+    cdr_eligible = approved or (failure_code is not None and failure_code != "ineligible")
+
+    derived_scan_id: str | None = None
+    derived_decision: Decision | None = None
+    derived_release_eligible: bool | None = None
+    if cdr_eligible and isinstance(derived_scan_id_raw, str):
+        derived_scan_id = derived_scan_id_raw
+        derived_response = await client.get(f"/api/v1/scans/{derived_scan_id}")
+        if derived_response.status_code == 200:
+            derived_body = derived_response.json()
+            derived_decision = Decision(str(derived_body["decision"]))
+            derived_release_eligible = bool(derived_body["release_eligible"])
+
+    source_recheck = await client.get(f"/api/v1/scans/{scan_id}")
+    source_decision_unchanged = (
+        source_recheck.status_code == 200
+        and Decision(str(source_recheck.json()["decision"])) is source_decision
+    )
+
+    return CdrEvaluationOutcome(
+        source_decision=source_decision,
+        source_decision_unchanged=source_decision_unchanged,
+        cdr_eligible=cdr_eligible,
+        derived_scan_id=derived_scan_id,
+        derived_decision=derived_decision,
+        derived_release_eligible=derived_release_eligible,
+    )
 
 
 def _error_result(

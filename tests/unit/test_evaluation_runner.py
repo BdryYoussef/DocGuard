@@ -89,6 +89,25 @@ def test_execute_mode_runs_a_small_smoke_set_through_the_real_pipeline() -> None
     assert run.metadata.corpus_case_count >= 45
 
 
+def test_execute_mode_runs_cdr_follow_up_for_cdr_cases() -> None:
+    """The BLOCK-decision CDR case must come back ineligible with the source decision
+    unchanged; the unsafe-development backend cannot actually render (no PyMuPDF
+    worker), so a non-BLOCK CDR case is expected to report an eligible-but-failed
+    outcome here — production-path CDR rendering is verified separately against the
+    real Bubblewrap backend per the Phase 11B completion report."""
+    run = execute_mode(
+        ["PDF-RISK-010"],
+        isolation_backend=IsolationBackendName.UNSAFE_DEVELOPMENT,
+    )
+
+    result = run.results[0]
+    assert result.cdr_outcome is not None
+    assert result.cdr_outcome.source_decision is Decision.BLOCK
+    assert result.cdr_outcome.source_decision_unchanged is True
+    assert result.cdr_outcome.cdr_eligible is False
+    assert result.cdr_outcome.derived_scan_id is None
+
+
 def _generator() -> FixtureGenerator:
     return FixtureGenerator(
         module="tests.fixtures.pdf_factory",
