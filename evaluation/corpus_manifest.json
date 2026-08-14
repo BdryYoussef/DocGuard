@@ -1,0 +1,1723 @@
+[
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "ARC-BEN-001",
+    "category": "BENIGN_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Ordinary ZIP with two harmless business-document members.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "documents.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "harmless.txt",
+            "fixture"
+          ],
+          [
+            "document.pdf",
+            "%PDF fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "ARC-BEN-002",
+    "category": "BENIGN_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Empty ZIP archive with no members.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "empty.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": []
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "ARC-BEN-003",
+    "category": "BENIGN_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "ZIP with only directory entries and one empty file member.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "folder-only.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "directory/",
+            ""
+          ],
+          [
+            "directory/empty.txt",
+            ""
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "ARC-BEN-004",
+    "category": "BENIGN_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "ZIP written with a streamed data descriptor (non-seekable writer); a valid but less common structural variant.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "streamed.zip",
+    "generator": {
+      "attribute": "data_descriptor_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "ARC-BEN-005",
+    "category": "BENIGN_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Small ZIP64-format archive; a valid but less common structural variant.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "zip64.zip",
+    "generator": {
+      "attribute": "small_zip64_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-001",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Member name with a parent-directory traversal component.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_PATH_TRAVERSAL"
+    ],
+    "fail_secure": false,
+    "filename": "traversal.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "../../evil.txt",
+            "controlled fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-002",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Member with a POSIX rooted (absolute) path.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_ABSOLUTE_PATH"
+    ],
+    "fail_secure": false,
+    "filename": "absolute.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "/etc/controlled-fixture.txt",
+            "controlled fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-003",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Unix symbolic-link entry; the link target is never read or followed.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_SYMLINK"
+    ],
+    "fail_secure": false,
+    "filename": "symlink.zip",
+    "generator": {
+      "attribute": "symlink_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-004",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Member name with an execution-capable extension (.scr).",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_DANGEROUS_MEMBER"
+    ],
+    "fail_secure": false,
+    "filename": "dangerous-member.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "invoice.scr",
+            "controlled fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-005",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Member disguises an execution-capable extension behind a document extension (double extension); the archive-member masquerade compound rule must trigger.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_DANGEROUS_MEMBER",
+      "ARCHIVE_MEMBER_DOUBLE_EXTENSION"
+    ],
+    "fail_secure": false,
+    "filename": "double-extension.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "invoice.pdf.exe",
+            "controlled fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-006",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Member name uses bidirectional Unicode controls to visually disguise its execution-capable extension.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_DANGEROUS_MEMBER",
+      "ARCHIVE_MEMBER_BIDI_OVERRIDE"
+    ],
+    "fail_secure": false,
+    "filename": "bidi-member.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "photo‮gpj.scr",
+            "controlled fixture"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-007",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Two members share an ambiguous normalized name.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "ARCHIVE_DUPLICATE_MEMBER"
+    ],
+    "fail_secure": false,
+    "filename": "duplicate-members.zip",
+    "generator": {
+      "attribute": "write_archive",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "members": [
+          [
+            "same.txt",
+            "one"
+          ],
+          [
+            "same.txt",
+            "two"
+          ]
+        ]
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-008",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "A ZIP member is flagged encrypted; DocGuard never decrypts or brute-forces it.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "ARCHIVE_ENCRYPTED",
+      "ARCHIVE_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "encrypted-member.zip",
+    "generator": {
+      "attribute": "encrypted_metadata_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-009",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Nested ZIP-in-ZIP exceeds the configured inspection recursion depth.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "ARCHIVE_NESTING_LIMIT",
+      "ARCHIVE_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "deep-nesting.zip",
+    "generator": {
+      "attribute": "nested_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {
+        "depth": 6
+      },
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-010",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "ZIP entry count exceeds the configured member budget.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "ARCHIVE_PARTIAL_ANALYSIS",
+      "ARCHIVE_RESOURCE_LIMIT"
+    ],
+    "fail_secure": true,
+    "filename": "many-entries.zip",
+    "generator": {
+      "attribute": "many_entries_archive_fixture",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "count": 4200
+      },
+      "module": "evaluation.corpus"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": true,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-011",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Central-directory CRC is inconsistent with the local header; structurally damaged ZIP.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "ARCHIVE_MALFORMED"
+    ],
+    "fail_secure": true,
+    "filename": "corrupt-crc.zip",
+    "generator": {
+      "attribute": "corrupt_crc_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": "ARCHIVE_PARTIAL_ANALYSIS is expected to co-occur but is not asserted exactly to avoid over-fitting ground truth to undocumented parser detail."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "ARC-RISK-012",
+    "category": "RISKY_ARCHIVE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Unsupported ZIP compression method; member data cannot be decompressed.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "ARCHIVE_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "unsupported-method.zip",
+    "generator": {
+      "attribute": "unsupported_method_archive_bytes",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.fixtures.archive_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE",
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": true,
+    "case_class": "RISKY",
+    "case_id": "FID-001",
+    "category": "FILE_IDENTITY",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Filename ends in a dangerous extension following a document extension ('invoice.pdf.exe') over otherwise-benign PDF content.",
+    "expected_analysis_complete": null,
+    "expected_findings": [
+      "FILE_DOUBLE_EXTENSION"
+    ],
+    "fail_secure": false,
+    "filename": "invoice.pdf.exe",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "pages": 1
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": "FILE_TYPE_MISMATCH may co-occur depending on claimed-extension-family resolution; both REVIEW (double-extension only) and QUARANTINE (with the compound identity-deception rule) are policy-consistent outcomes."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE",
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": true,
+    "case_class": "RISKY",
+    "case_id": "FID-002",
+    "category": "FILE_IDENTITY",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Filename contains a Unicode bidirectional override that can visually reorder the displayed extension, over otherwise-benign PDF content.",
+    "expected_analysis_complete": null,
+    "expected_findings": [
+      "FILE_BIDI_OVERRIDE"
+    ],
+    "fail_secure": false,
+    "filename": "invoice‮fdp.exe",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "pages": 1
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": "FILE_TYPE_MISMATCH may co-occur because the claimed final extension implies a non-PDF family; both outcomes are policy-consistent."
+  },
+  {
+    "acceptable_additional_findings": [
+      "FILE_CLIENT_MIME_MISMATCH"
+    ],
+    "acceptable_decisions": [
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "FID-003",
+    "category": "FILE_IDENTITY",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Plain-text content uploaded under a filename that claims a PDF extension.",
+    "expected_analysis_complete": null,
+    "expected_findings": [
+      "FILE_TYPE_MISMATCH"
+    ],
+    "fail_secure": false,
+    "filename": "report.pdf",
+    "generator": {
+      "attribute": "BENIGN_TEXT",
+      "kind": "BYTES_CONST",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "FID-004",
+    "category": "FILE_IDENTITY",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Windows executable content masquerading under a PDF filename and claimed content type.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "FILE_CLIENT_MIME_MISMATCH",
+      "FILE_EXECUTABLE_MASQUERADE",
+      "FILE_TYPE_MISMATCH"
+    ],
+    "fail_secure": false,
+    "filename": "invoice.pdf",
+    "generator": {
+      "attribute": "inert_pe_fixture",
+      "kind": "BYTES_FACTORY",
+      "kwargs": {},
+      "module": "tests.unit.test_file_identification"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "FID-005",
+    "category": "FILE_IDENTITY",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Ordinary dotted filename over matching PDF content; negative control proving an unremarkable dotted name is never flagged as a double extension.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "quarterly.report.pdf",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "pages": 1
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-001",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Plain Word OOXML package, no macros or external content.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "memo.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-002",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Plain Excel OOXML package, no macros or external content.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "ledger.xlsx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "EXCEL"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-003",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Plain PowerPoint OOXML package, no macros or external content.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "briefing.pptx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "POWERPOINT"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-004",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Classic (pre-OOXML) compound-file Word document, no macro stream.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "legacy-memo.doc",
+    "generator": {
+      "attribute": "write_classic_ole",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-005",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "OOXML package with extra harmless internal ZIP entries; verifies benign package variety does not false-positive.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "packet.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "extra_entries": 10
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "OFF-BEN-006",
+    "category": "BENIGN_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Plain Word OOXML with longer benign visible document text.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "policy-notes.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "visible_text": "This controlled fixture document contains only ordinary prose."
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-001",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Macro-enabled OOXML with a VBA project but no autoexec or execution indicators.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_MACRO_ENABLED",
+      "OFFICE_PARTIAL_ANALYSIS",
+      "OFFICE_VBA_MACRO"
+    ],
+    "fail_secure": false,
+    "filename": "macro-plain.docm",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "macro_source": "Attribute VB_Name = \"Module1\"\nSub DoSomething()\n    Dim note As String\n    note = \"DOCGUARD_CONTROLLED_FIXTURE_NO_AUTOEXEC\"\nEnd Sub\n"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": "The controlled fixture VBA stream is not a full real vbaProject.bin structure, so oletools reports it as an orphan VBA stream and OFFICE_PARTIAL_ANALYSIS always accompanies macro findings from this factory; this is a known fixture-generator characteristic, not a detector defect."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-002",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Macro-enabled OOXML with an AutoOpen automatic-execution entry point.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_MACRO_ENABLED",
+      "OFFICE_PARTIAL_ANALYSIS",
+      "OFFICE_VBA_AUTOEXEC",
+      "OFFICE_VBA_MACRO"
+    ],
+    "fail_secure": false,
+    "filename": "macro-autoexec.docm",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "macro_source": "__HARMLESS_AUTOEXEC_SOURCE__"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": "The controlled fixture VBA stream is not a full real vbaProject.bin structure, so oletools reports it as an orphan VBA stream and OFFICE_PARTIAL_ANALYSIS always accompanies macro findings from this factory; this is a known fixture-generator characteristic, not a detector defect."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-003",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Macro-enabled OOXML with execution-capable constructs (WScript.Shell, Run).",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_MACRO_ENABLED",
+      "OFFICE_PARTIAL_ANALYSIS",
+      "OFFICE_VBA_EXECUTION_INDICATOR",
+      "OFFICE_VBA_MACRO"
+    ],
+    "fail_secure": false,
+    "filename": "macro-execution-indicator.docm",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "macro_source": "__HARMLESS_EXECUTION_INDICATOR_SOURCE__"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": "The controlled fixture VBA stream is not a full real vbaProject.bin structure, so oletools reports it as an orphan VBA stream and OFFICE_PARTIAL_ANALYSIS always accompanies macro findings from this factory; this is a known fixture-generator characteristic, not a detector defect."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-004",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Macro combines an autoexec entry point with execution-capable constructs; the compound execution-chain rule must trigger.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_MACRO_ENABLED",
+      "OFFICE_PARTIAL_ANALYSIS",
+      "OFFICE_VBA_AUTOEXEC",
+      "OFFICE_VBA_EXECUTION_INDICATOR",
+      "OFFICE_VBA_MACRO"
+    ],
+    "fail_secure": false,
+    "filename": "macro-autoexec-execution.docm",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "macro_source": "__HARMLESS_AUTOEXEC_AND_EXECUTION_INDICATOR_SOURCE__"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": "The controlled fixture VBA stream is not a full real vbaProject.bin structure, so oletools reports it as an orphan VBA stream and OFFICE_PARTIAL_ANALYSIS always accompanies macro findings from this factory; this is a known fixture-generator characteristic, not a detector defect. Exercises POLICY_COMPOUND_OFFICE_MACRO_EXECUTION_CHAIN."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-005",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Single passive external relationship (never fetched).",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "OFFICE_EXTERNAL_RELATIONSHIP"
+    ],
+    "fail_secure": false,
+    "filename": "external-link.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "external_relationship": true
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-006",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "External attached-template relationship (remote template injection shape).",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "OFFICE_EXTERNAL_RELATIONSHIP",
+      "OFFICE_EXTERNAL_TEMPLATE"
+    ],
+    "fail_secure": false,
+    "filename": "external-template.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "application": "WORD",
+        "external_relationship": true,
+        "external_template": true
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-007",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Embedded OLE object plus ActiveX control structures, neither instantiated.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "OFFICE_ACTIVEX",
+      "OFFICE_EMBEDDED_OBJECT"
+    ],
+    "fail_secure": false,
+    "filename": "embedded-activex.docx",
+    "generator": {
+      "attribute": "write_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "activex": true,
+        "application": "WORD",
+        "embedded_object": true
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": true,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-008",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Classic compound-file Word document with an AutoOpen macro stream.",
+    "expected_analysis_complete": null,
+    "expected_findings": [
+      "OFFICE_VBA_AUTOEXEC",
+      "OFFICE_VBA_MACRO"
+    ],
+    "fail_secure": false,
+    "filename": "legacy-macro.doc",
+    "generator": {
+      "attribute": "write_classic_ole",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "macro_source": "__HARMLESS_AUTOEXEC_SOURCE__"
+      },
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": "Additional office-analysis-limitation findings are plausible for the synthetic classic-OLE macro stream and are not exhaustively enumerated."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-009",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Encrypted classic compound-file Office container; content cannot be inspected.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_ENCRYPTED",
+      "OFFICE_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "encrypted.doc",
+    "generator": {
+      "attribute": "write_encrypted_office_ole",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "OFF-RISK-010",
+    "category": "RISKY_OFFICE",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Internally inconsistent OOXML package structure (content-types/relationships).",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "OFFICE_MALFORMED",
+      "OFFICE_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "inconsistent.docx",
+    "generator": {
+      "attribute": "write_inconsistent_ooxml",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.office_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "PDF-BEN-001",
+    "category": "BENIGN_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Single-page structurally plain PDF with no active content.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "quarterly-summary.pdf",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "pages": 1
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "PDF-BEN-002",
+    "category": "BENIGN_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Multi-page structurally plain PDF; verifies zero-finding scaling across pages.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "annual-report.pdf",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "pages": 10
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "PDF-BEN-003",
+    "category": "BENIGN_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Visible page text mentions '/JavaScript' as prose; must not be keyword-matched as an active-content finding.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "syntax-notes.pdf",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "keyword_text": true,
+        "pages": 1
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": "False-positive robustness control for PDF_JAVASCRIPT keyword matching."
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "PDF-BEN-004",
+    "category": "BENIGN_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Multi-page PDF combining benign prose that mentions active-content keywords.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "training-material.pdf",
+    "generator": {
+      "attribute": "write_benign_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "keyword_text": true,
+        "pages": 4
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-001",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "OpenAction dictionary present (GoTo); low-severity, policy allows release.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_OPEN_ACTION"
+    ],
+    "fail_secure": false,
+    "filename": "open-action.pdf",
+    "generator": {
+      "attribute": "write_open_action_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-002",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "AA (additional actions) dictionary present.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_ADDITIONAL_ACTION"
+    ],
+    "fail_secure": false,
+    "filename": "additional-action.pdf",
+    "generator": {
+      "attribute": "write_additional_action_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-003",
+    "category": "RISKY_PDF",
+    "cdr_case": true,
+    "cdr_expected_outcome": "RECONSTRUCT_SUCCESS",
+    "claimed_content_type": "application/pdf",
+    "description": "JavaScript OpenAction; compound auto-JS rule must escalate to QUARANTINE.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_JAVASCRIPT",
+      "PDF_OPEN_ACTION"
+    ],
+    "fail_secure": false,
+    "filename": "javascript-open.pdf",
+    "generator": {
+      "attribute": "write_javascript_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-004",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "JavaScript reachable only via the document Names/JavaScript tree, no OpenAction.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_JAVASCRIPT"
+    ],
+    "fail_secure": false,
+    "filename": "javascript-name-tree.pdf",
+    "generator": {
+      "attribute": "write_javascript_name_tree_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-005",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Launch action capable of invoking an external resource; mandatory QUARANTINE.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_LAUNCH_ACTION",
+      "PDF_OPEN_ACTION"
+    ],
+    "fail_secure": false,
+    "filename": "launch-action.pdf",
+    "generator": {
+      "attribute": "write_launch_action_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-006",
+    "category": "RISKY_PDF",
+    "cdr_case": true,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Embedded file specification not recursively analyzed.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_EMBEDDED_FILE"
+    ],
+    "fail_secure": false,
+    "filename": "embedded-attachment.pdf",
+    "generator": {
+      "attribute": "write_embedded_file_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "REVIEW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-007",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "AcroForm with an XFA structure that DocGuard never renders or executes.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_ACROFORM",
+      "PDF_XFA"
+    ],
+    "fail_secure": false,
+    "filename": "xfa-form.pdf",
+    "generator": {
+      "attribute": "write_acroform_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {
+        "xfa": true
+      },
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-008",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Passive external URI action; DocGuard records bounded metadata and never fetches it. Ground truth is RISKY per the documented threat model even though the URI target itself is inert (see AGENTS.md section 17).",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_EXTERNAL_URI"
+    ],
+    "fail_secure": false,
+    "filename": "external-uri.pdf",
+    "generator": {
+      "attribute": "write_uri_action_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-009",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Plain interactive AcroForm with no XFA content.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_ACROFORM"
+    ],
+    "fail_secure": false,
+    "filename": "acroform.pdf",
+    "generator": {
+      "attribute": "write_acroform_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-010",
+    "category": "RISKY_PDF",
+    "cdr_case": true,
+    "cdr_expected_outcome": "BLOCK_INELIGIBLE",
+    "claimed_content_type": "application/pdf",
+    "description": "Structurally benign, renderable PDF with a trailing EICAR test signature; proves a hard-blocked PDF source must never expose CDR.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "YARA_TEST_SIGNATURE"
+    ],
+    "fail_secure": false,
+    "filename": "invoice-eicar.pdf",
+    "generator": {
+      "attribute": "pdf_with_eicar_fixture",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "evaluation.corpus"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-011",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Password-protected/encrypted PDF; structural inspection cannot complete.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "PDF_ENCRYPTED",
+      "PDF_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "encrypted.pdf",
+    "generator": {
+      "attribute": "write_encrypted_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "PDF-RISK-012",
+    "category": "RISKY_PDF",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": "application/pdf",
+    "description": "Structurally damaged PDF (truncated object stream); analysis cannot be trusted.",
+    "expected_analysis_complete": false,
+    "expected_findings": [
+      "PDF_MALFORMED",
+      "PDF_PARTIAL_ANALYSIS"
+    ],
+    "fail_secure": true,
+    "filename": "malformed.pdf",
+    "generator": {
+      "attribute": "write_malformed_pdf",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.pdf_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "BLOCK"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "YAR-001",
+    "category": "YARA",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "The standard EICAR anti-malware test string; a controlled test artifact, not real malware, must still hard-block per the trusted local test signature.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "YARA_TEST_SIGNATURE"
+    ],
+    "fail_secure": false,
+    "filename": "eicar-test-fixture.txt",
+    "generator": {
+      "attribute": "EICAR_TEST_BYTES",
+      "kind": "BYTES_CONST",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "YAR-002",
+    "category": "YARA",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "JavaScript PDF with a trailing PowerShell encoded-command heuristic pattern.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "PDF_JAVASCRIPT",
+      "PDF_OPEN_ACTION",
+      "YARA_HEURISTIC_MATCH"
+    ],
+    "fail_secure": false,
+    "filename": "javascript-with-powershell-pattern.pdf",
+    "generator": {
+      "attribute": "write_pdf_with_yara_pattern",
+      "kind": "WRITE_PATH",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "YAR-003",
+    "category": "YARA",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Prose discussing PowerShell academically; negative control for the encoded-command heuristic.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "powershell-notes.txt",
+    "generator": {
+      "attribute": "BENIGN_POWERSHELL_PROSE",
+      "kind": "BYTES_CONST",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "QUARANTINE"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "RISKY",
+    "case_id": "YAR-004",
+    "category": "YARA",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Bounded cmd.exe chained-invocation heuristic pattern.",
+    "expected_analysis_complete": true,
+    "expected_findings": [
+      "YARA_HEURISTIC_MATCH"
+    ],
+    "fail_secure": false,
+    "filename": "cmd-fixture.txt",
+    "generator": {
+      "attribute": "CMD_INVOCATION_PATTERN",
+      "kind": "BYTES_CONST",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  },
+  {
+    "acceptable_additional_findings": [],
+    "acceptable_decisions": [
+      "ALLOW"
+    ],
+    "allow_any_additional_findings": false,
+    "case_class": "BENIGN",
+    "case_id": "YAR-005",
+    "category": "YARA",
+    "cdr_case": false,
+    "cdr_expected_outcome": null,
+    "claimed_content_type": null,
+    "description": "Prose discussing cmd.exe academically; negative control for the command-shell chain heuristic.",
+    "expected_analysis_complete": true,
+    "expected_findings": [],
+    "fail_secure": false,
+    "filename": "cmd-notes.txt",
+    "generator": {
+      "attribute": "BENIGN_CMD_PROSE",
+      "kind": "BYTES_CONST",
+      "kwargs": {},
+      "module": "tests.fixtures.yara_factory"
+    },
+    "notes": ""
+  }
+]
