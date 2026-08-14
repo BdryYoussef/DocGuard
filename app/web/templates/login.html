@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login · DocGuard</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="login-body">
+  <main class="login-card">
+    <div class="brand login-brand"><span>DocGuard</span><small>Isolated and Explainable Security Gateway for Untrusted Business Documents</small></div>
+    <h1>Operator login</h1>
+    <p class="muted">Authorized operators only.</p>
+    {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="/login" class="stack">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username" maxlength="64" required autofocus>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+      <button type="submit" class="button button-primary">Login</button>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+.venv/
+.python-deps/
+.worker-deps/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+# Local secrets/configuration
+.env
+.env.*
+!.env.example
+!deploy/docguard.env.example
+
+*.db
+*.sqlite
+*.sqlite3
+requirements.lock.tmp
+
+# Hostile samples and all runtime artifacts stay out of version control.
+var/**
+!var/
+
+# Generated packaging output.
+build/
+dist/
+*.egg-info/

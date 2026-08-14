@@ -1,0 +1,5 @@
+{% if scans %}
+<div class="table-wrap"><table><thead><tr><th>Document</th><th>Detected type</th><th>Decision</th><th>Risk</th><th>Created</th></tr></thead><tbody>
+{% for scan in scans %}<tr><td><a href="/app/scans/{{ scan.id }}">{{ scan.display_filename }}</a><small class="mono">{{ scan.id }}</small></td><td>{{ scan.detected_type or 'Pending' }}</td><td><span class="badge badge-{{ (scan.decision or 'QUARANTINE')|lower }}">{{ scan.decision or 'QUARANTINE' }}</span></td><td>{{ scan.risk_score if scan.risk_score is not none else 0 }} · {{ scan.severity or 'LOW' }}</td><td><time datetime="{{ scan.created_at.isoformat() }}">{{ scan.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<p class="empty-state">No scans yet.</p>{% endif %}

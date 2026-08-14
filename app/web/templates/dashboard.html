@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · DocGuard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Operations</p><h1>Document security dashboard</h1></div></div>
+<section class="grid grid-two">
+  <article class="card">
+    <h2>Inspect a document</h2>
+    <p class="muted">The file is streamed to private quarantine, then analyzed inside the isolated worker.</p>
+    <form id="upload-form" class="stack" data-csrf-token="{{ csrf_token }}" data-maximum-bytes="{{ maximum_upload_bytes }}">
+      <label for="document">Document</label>
+      <input id="document" name="document" type="file" required>
+      <p class="hint">Maximum {{ (maximum_upload_bytes / 1048576)|round(1) }} MiB. One file per scan.</p>
+      <button class="button button-primary" type="submit">Upload and analyze</button>
+      <p id="upload-status" class="hint" aria-live="polite"></p>
+    </form>
+  </article>
+  <article class="card">
+    <h2>Current decisions</h2>
+    <dl class="metric-grid">
+      {% for decision in ['ALLOW', 'REVIEW', 'QUARANTINE', 'BLOCK'] %}
+      <div><dt>{{ decision }}</dt><dd>{{ dashboard.decision_counts.get(decision, 0) }}</dd></div>
+      {% endfor %}
+      <div><dt>Approved sanitized</dt><dd>{{ dashboard.approved_artifact_count }}</dd></div>
+    </dl>
+  </article>
+</section>
+<section class="card">
+  <div class="section-heading"><h2>Recent scans</h2><a href="/app/scans">View all</a></div>
+  {% with scans=dashboard.recent_scans %}{% include "partials/scan_table.html" %}{% endwith %}
+</section>
+<section class="card">
+  <div class="section-heading"><h2>Recently contained</h2><a href="/app/quarantine">Open queue</a></div>
+  {% with scans=dashboard.contained_scans %}{% include "partials/scan_table.html" %}{% endwith %}
+</section>
+<p class="disclaimer">DocGuard decisions describe the configured detection model. ALLOW is not proof that a document is benign.</p>
+{% endblock %}

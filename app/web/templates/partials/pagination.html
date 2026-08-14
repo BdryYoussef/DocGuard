@@ -1,0 +1,1 @@
+{% if page.total > page.page_size %}<nav class="pagination" aria-label="Pagination">{% if page.page > 1 %}<a class="button button-quiet" href="?page={{ page.page - 1 }}">Previous</a>{% endif %}<span>Page {{ page.page }}</span>{% if page.page * page.page_size < page.total %}<a class="button button-quiet" href="?page={{ page.page + 1 }}">Next</a>{% endif %}</nav>{% endif %}

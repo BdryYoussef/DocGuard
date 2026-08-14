@@ -1,0 +1,18 @@
+# Worker-only hostile-input parser environment. Install into a dedicated read-only artifact.
+cffi==2.1.1
+colorclass==2.2.2
+cryptography==50.0.0
+defusedxml==0.7.1
+easygui==0.98.3
+lxml==6.1.1
+msoffcrypto-tool==6.0.0
+olefile==0.47
+oletools==0.60.2
+packaging==26.3
+pcodedmp==1.2.6
+pikepdf==10.11.0
+PyMuPDF==1.28.2
+Pillow==12.3.0
+pycparser==3.0
+pyparsing==3.2.5
+yara-python==4.5.4

@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block title %}Scans · DocGuard{% endblock %}
+{% block content %}<div class="page-heading"><div><p class="eyebrow">History</p><h1>Scans</h1><p class="muted">Newest scans first. Results are persisted under the policy active at analysis time.</p></div></div>
+<section class="card">{% with scans=page.items %}{% include "partials/scan_table.html" %}{% endwith %}{% include "partials/pagination.html" %}</section>{% endblock %}

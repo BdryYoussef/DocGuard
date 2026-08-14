@@ -1,0 +1,78 @@
+# Loaded inside nginx's http context. Replace docguard.example and certificate paths.
+limit_req_zone $binary_remote_addr zone=docguard_login:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=docguard_general:10m rate=120r/m;
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 444;
+}
+
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    server_name _;
+    ssl_reject_handshake on;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name docguard.example;
+    return 308 https://docguard.example$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name docguard.example;
+    server_tokens off;
+
+    ssl_certificate /etc/letsencrypt/live/docguard.example/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docguard.example/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 26m;
+    client_body_timeout 30s;
+
+    location = /login {
+        limit_req zone=docguard_login burst=5 nodelay;
+        include /etc/nginx/proxy_params;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host docguard.example;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For "";
+        proxy_set_header X-Forwarded-Proto "";
+        proxy_set_header X-Forwarded-Host "";
+        proxy_set_header Forwarded "";
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_cache off;
+    }
+
+    location ~ ^/(docs|redoc|openapi\.json)(/|$) {
+        return 404;
+    }
+
+    location / {
+        limit_req zone=docguard_general burst=60 nodelay;
+        include /etc/nginx/proxy_params;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host docguard.example;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For "";
+        proxy_set_header X-Forwarded-Proto "";
+        proxy_set_header X-Forwarded-Host "";
+        proxy_set_header Forwarded "";
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 120s;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_cache off;
+        add_header X-Proxy-Cache "BYPASS" always;
+    }
+}

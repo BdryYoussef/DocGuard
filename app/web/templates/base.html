@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DocGuard{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/app"><span>DocGuard</span><small>Isolated document security gateway</small></a>
+    <nav aria-label="Primary navigation">
+      <a href="/app"{% if active == 'dashboard' %} aria-current="page"{% endif %}>Dashboard</a>
+      <a href="/app/scans"{% if active == 'scans' %} aria-current="page"{% endif %}>Scans</a>
+      <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>Quarantine</a>
+      <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>Sanitized</a>
+      <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>Audit</a>
+    </nav>
+    <form method="post" action="/logout" class="logout-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <span class="operator-name">{{ principal.username }}</span>
+      <button type="submit" class="button button-quiet">Logout</button>
+    </form>
+  </header>
+  <main class="shell">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

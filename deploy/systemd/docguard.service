@@ -1,0 +1,34 @@
+[Unit]
+Description=DocGuard trusted document security gateway
+After=network.target
+ConditionPathIsDirectory=/opt/docguard
+
+[Service]
+Type=simple
+User=docguard
+Group=docguard
+WorkingDirectory=/opt/docguard
+EnvironmentFile=/etc/docguard/docguard.env
+UMask=0077
+ExecStartPre=/opt/docguard/.venv/bin/python -m scripts.production_preflight
+ExecStart=/opt/docguard/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-proxy-headers --no-server-header --no-access-log
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=180s
+TimeoutStopSec=30s
+KillMode=mixed
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectHome=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadOnlyPaths=/opt/docguard
+ReadWritePaths=/var/lib/docguard
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+LockPersonality=true
+LimitNOFILE=1024
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target
