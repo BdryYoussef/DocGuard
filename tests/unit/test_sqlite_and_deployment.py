@@ -146,6 +146,64 @@ def test_reference_deployment_freezes_single_loopback_worker_and_proxy_overwrite
         assert forbidden not in environment
 
 
+def test_check_storage_and_reconcile_print_actionable_hint_for_uninitialized_schema(
+    tmp_path: Path,
+) -> None:
+    """check_storage and reconcile_state must emit a HINT when the DB has no schema tables.
+
+    An empty SQLite file passes PRAGMA quick_check(1) but has no application tables.
+    The CLIs previously printed only FAIL ... (OperationalError) which gave no actionable
+    information. This regression test confirms the HINT line is now emitted.
+    """
+    environment = {
+        **os.environ,
+        "PYTHONPATH": ".python-deps:.worker-deps:.",
+        "DOCGUARD_DATABASE_URL": f"sqlite:///{tmp_path / 'empty.db'}",
+        "DOCGUARD_STORAGE_ROOT": str(tmp_path / "storage"),
+        "DOCGUARD_APPLICATION_ORIGIN": "https://docguard.test.local",
+    }
+    # Create the empty SQLite file and storage root (no alembic migration)
+    engine = create_database_engine(environment["DOCGUARD_DATABASE_URL"])
+    with engine.connect() as connection:
+        connection.execute(text("SELECT 1"))
+    engine.dispose()
+    storage = tmp_path / "storage"
+    storage.mkdir(mode=0o700, exist_ok=True)
+
+    check = subprocess.run(
+        [sys.executable, "-m", "scripts.check_storage"],
+        cwd=Path.cwd(),
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert check.returncode == 1
+    assert "FAIL storage verification (OperationalError)" in check.stdout
+    assert "HINT database schema is not initialized" in check.stdout
+    assert "alembic upgrade head" in check.stdout
+    # Must not expose raw SQL or the DB path
+    assert str(tmp_path) not in check.stdout
+    assert "SELECT" not in check.stdout
+
+    reconcile = subprocess.run(
+        [sys.executable, "-m", "scripts.reconcile_state"],
+        cwd=Path.cwd(),
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert reconcile.returncode == 1
+    assert "FAIL reconciliation (OperationalError)" in reconcile.stdout
+    assert "HINT database schema is not initialized" in reconcile.stdout
+    assert "alembic upgrade head" in reconcile.stdout
+    assert str(tmp_path) not in reconcile.stdout
+    assert "SELECT" not in reconcile.stdout
+
+
 def test_database_url_redaction_never_returns_credentials_or_internal_path() -> None:
     rendered = redact_database_url("postgresql://operator:secret@example.test/private")
     assert rendered == "postgresql://[redacted]"

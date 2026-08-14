@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import Settings
@@ -29,6 +30,11 @@ def main() -> int:
             batch_size=arguments.batch_size,
             include_quarantine=arguments.include_quarantine,
         )
+    except OperationalError as exc:
+        print(f"FAIL storage verification ({type(exc).__name__})")
+        if "no such table" in str(exc.orig or ""):
+            print("HINT database schema is not initialized; run: alembic upgrade head")
+        return 1
     except Exception as exc:
         print(f"FAIL storage verification ({type(exc).__name__})")
         return 1
