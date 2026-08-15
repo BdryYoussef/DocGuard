@@ -1,6 +1,16 @@
-# Phase 9 Threat Model
+# DocGuard Threat Model
 
-Status legend: **implemented** is enforced and tested in this phase; **planned** remains future work.
+Status legend: **Implemented** is enforced and tested in the current release; **Residual risk** is an
+accepted, documented limitation rather than a gap to be silently assumed closed.
+
+## Assets
+
+- Confidential business documents submitted for analysis (raw quarantine bytes and any derived
+  sanitized artifact).
+- Operator credentials (Argon2id password hashes) and active sessions (bearer tokens/CSRF secrets).
+- Sanitized (CDR-derived) artifacts approved for release.
+- Policy, YARA rule pack, and sanitizer identity/integrity (version and fingerprint).
+- Audit log integrity (append-only accountability record of who did what, when).
 
 | Threat | Impact | Mitigation | Status |
 |---|---|---|---|
