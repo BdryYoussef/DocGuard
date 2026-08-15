@@ -397,7 +397,7 @@ async def test_cookie_and_browser_security_headers_are_environment_specific(
         assert "default-src 'self'" in login_page.headers["content-security-policy"]
         assert "unsafe-inline" not in login_page.headers["content-security-policy"]
         assert login_page.headers["x-content-type-options"] == "nosniff"
-        assert login_page.headers["referrer-policy"] == "no-referrer"
+        assert login_page.headers["referrer-policy"] == "same-origin"
         assert "frame-ancestors 'none'" in login_page.headers["content-security-policy"]
 
     production_settings = Settings(

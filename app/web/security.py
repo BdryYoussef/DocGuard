@@ -25,7 +25,12 @@ CONTENT_SECURITY_POLICY = "; ".join(
 def apply_security_headers(request: Request, response: Response, settings: Settings) -> None:
     response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Referrer-Policy"] = "no-referrer"
+    # Per the Fetch standard's request-Origin-header algorithm, a same-origin, non-GET/HEAD
+    # request (e.g. this HTML form's POST) serializes its Origin header as the literal
+    # string "null" when the governing Referrer-Policy is "no-referrer". "same-origin"
+    # avoids that downgrade for same-origin requests (needed for exact Origin validation
+    # in app.auth.http) while still sending no referrer at all cross-origin.
+    response.headers["Referrer-Policy"] = "same-origin"
     response.headers["Permissions-Policy"] = (
         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
     )

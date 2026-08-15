@@ -44,10 +44,17 @@ trust switch.
 
 Application pages, login, logout, and operator APIs use `Cache-Control: no-store`. Approved artifact
 downloads use `Cache-Control: no-store, private`. All responses receive `X-Content-Type-Options:
-nosniff`, `Referrer-Policy: no-referrer`, a restrictive `Permissions-Policy`, and the CSP above.
+nosniff`, `Referrer-Policy: same-origin`, a restrictive `Permissions-Policy`, and the CSP above.
 Production HTTPS responses include one-year HSTS with subdomains. Deployers must ensure HTTPS is
 genuinely end to end for the application origin before relying on HSTS; local HTTP development does
 not send it.
+
+`same-origin` (rather than `no-referrer`) is required so that a same-origin, non-GET/HEAD browser
+request — such as the login form's POST — keeps a real `Origin` header. Per the Fetch standard, a
+same-origin request whose governing referrer policy is `no-referrer` serializes its `Origin` header
+as the literal string `null`, which then fails the exact same-origin comparison in
+`app.auth.http._enforce_origin` with `403 foreign origin rejected`. `same-origin` still sends no
+referrer at all cross-origin.
 
 Production disables Swagger UI, ReDoc, and the OpenAPI JSON endpoint. Anonymous surface is limited
 to login, liveness/readiness, and application-owned static assets. Detailed readiness names appear
