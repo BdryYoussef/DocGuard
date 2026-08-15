@@ -210,8 +210,13 @@ class OperatorQueryService:
                     )
                     or 0
                 )
-                for scan in [*recent, *contained]:
-                    session.expunge(scan)
+            # `recent` and `contained` can share rows (e.g. a QUARANTINE source scan
+            # is both "recent" and "contained"); SQLAlchemy's identity map returns the
+            # *same* Python instance for that row in both lists, so expunging it twice
+            # would raise InvalidRequestError. Exiting the `with` block above already
+            # closes the session, which expunges every object exactly once regardless
+            # of how many query results reference it; `expire_on_commit=False` keeps
+            # already-loaded scalar attributes readable afterward.
             return DashboardData(counts, recent, contained, approved_count)
         except SQLAlchemyError as exc:
             raise OperatorQueryError("dashboard query failed") from exc

@@ -43,8 +43,11 @@ freeze").
 
 ## Test result
 
-Full suite: **396 passed** (see `docs/RELEASE_CHECKLIST.md` and the Phase 12 completion
-report for the exact command and final confirmation run).
+Full suite: **403 passed** (396 at the Phase 12 qualification snapshot above, plus 7
+regression tests added by two narrow post-release fixes: the login `Referrer-Policy`
+same-origin-form-submission fix, and the operator dashboard double-`session.expunge()`
+fix. Neither fix touched detection/policy/YARA/CDR code — see their respective
+completion reports for exact commands and results).
 
 ## Phase 11 corpus identity (evaluation basis)
 
