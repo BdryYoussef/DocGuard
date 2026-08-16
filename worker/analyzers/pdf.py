@@ -13,6 +13,7 @@ import pikepdf
 from pikepdf import Array, Dictionary, Name, NameTree, Object, Stream
 
 from worker.analyzers.file_type import FileFamily
+from worker.analyzers.pdf_fallback import PdfFallbackLimits, scan_for_fallback_indicators
 from worker.constants import PDF_PARSER_NAME, PDF_PARSER_VERSION
 from worker.findings import finding_payload
 
@@ -31,6 +32,8 @@ class PdfAnalysisLimits:
     max_embedded_names: int = 32
     max_additional_triggers: int = 128
     max_additional_trigger_names: int = 32
+    max_javascript_scan_bytes: int = 64 * 1024
+    max_fallback_scan_bytes: int = 8 * 1024 * 1024
 
     def __post_init__(self) -> None:
         if any(
@@ -48,6 +51,8 @@ class PdfAnalysisLimits:
                 self.max_embedded_names,
                 self.max_additional_triggers,
                 self.max_additional_trigger_names,
+                self.max_javascript_scan_bytes,
+                self.max_fallback_scan_bytes,
             )
         ):
             raise ValueError("PDF analysis limits must be positive")
@@ -109,10 +114,16 @@ class _InspectionState:
     javascript_name_tree_entries: int = 0
     javascript_name_tree_present: bool = False
     javascript_sources: set[str] = field(default_factory=set)
+    javascript_behavior_indicators: set[str] = field(default_factory=set)
     launch_action_count: int = 0
     external_uri_count: int = 0
     uri_metadata: list[dict[str, object]] = field(default_factory=list)
     uri_metadata_capped: bool = False
+    external_submission_count: int = 0
+    submit_form_targets: list[dict[str, object]] = field(default_factory=list)
+    submit_form_targets_capped: bool = False
+    fallback_indicator_counts: dict[str, int] = field(default_factory=dict)
+    fallback_scan_truncated: bool = False
     attachment_names: list[str] = field(default_factory=list)
     attachment_names_capped: bool = False
     attachment_specs: set[ObjectKey] = field(default_factory=set)
@@ -144,6 +155,10 @@ _PARSER_EXCEPTIONS = (
 )
 _KNOWN_ACTION_TYPES = {
     "/GoTo": "GoTo",
+    # Go-to-embedded: navigates into a destination inside an embedded/attached PDF.
+    # ISO 32000-2 \u00a712.6.4.4. Recognizing it explicitly avoids reporting a real,
+    # named action type as an unclassified "Unknown:GoToE".
+    "/GoToE": "GoToE",
     "/GoToR": "GoToR",
     "/ImportData": "ImportData",
     "/JavaScript": "JavaScript",
@@ -152,6 +167,43 @@ _KNOWN_ACTION_TYPES = {
     "/URI": "URI",
 }
 _BIDI_CONTROLS = frozenset("\u200e\u200f\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069")
+
+# Bounded, non-exhaustive substrings observed in structurally-confirmed JavaScript
+# actions that DocGuard has already parsed (never executed). These are simple
+# substring checks, not semantic analysis: presence is a heuristic indicator of an
+# API *family* the script text references, not proof the script runs or succeeds.
+_JS_BEHAVIOR_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "external_submission_api": (
+        "submitForm",
+        '"submitForm"',
+        "importDataObject",
+        '"importDataObject"',
+    ),
+    "external_url_open_api": (
+        "getURL",
+        '"getURL"',
+        "launchURL",
+        '"launchURL"',
+        "openDoc",
+        '"openDoc"',
+    ),
+    "external_network_api": (
+        "fetch(",
+        "XMLHttpRequest",
+        "WebSocket",
+        "SOAP.connect",
+        "SOAP.request",
+        "SOAP.streamDecode",
+        "new Image",
+    ),
+    "document_content_access": (
+        "getField(",
+        "getPageNumWords(",
+        "getPageNthWord(",
+        "getAnnots(",
+        "getOCGs(",
+    ),
+}
 
 
 def analyze_pdf(
@@ -178,15 +230,18 @@ def analyze_pdf(
         state.encrypted = True
         state.parser_exception = "PasswordError"
         state.partial("password_required")
+        _apply_fallback_scan(state, sample_path)
         return _result(state)
     except pikepdf.DependencyError as exc:
         state.parser_exception = type(exc).__name__
         state.partial("unsupported_pdf_feature")
+        _apply_fallback_scan(state, sample_path)
         return _result(state)
     except pikepdf.PdfError as exc:
         state.malformed = True
         state.parser_exception = type(exc).__name__
         state.partial("parser_rejected_pdf")
+        _apply_fallback_scan(state, sample_path)
         return _result(state)
 
     with pdf:
@@ -204,7 +259,26 @@ def analyze_pdf(
         if warnings:
             state.malformed = True
             state.partial("parser_recovery_warning")
+    _apply_fallback_scan(state, sample_path)
     return _result(state)
+
+
+def _apply_fallback_scan(state: _InspectionState, sample_path: Path) -> None:
+    """Populate bounded lexical fallback evidence when structural coverage is not
+    COMPLETE. A no-op whenever the structural traversal already fully succeeded —
+    the fallback exists to recover evidence the parser could not reach, not to
+    duplicate work when nothing was lost."""
+    if not (state.malformed or state.partial_reasons):
+        return
+    fallback_limits = PdfFallbackLimits(max_scan_bytes=state.limits.max_fallback_scan_bytes)
+    try:
+        with sample_path.open("rb") as handle:
+            raw_bytes = handle.read(fallback_limits.max_scan_bytes + 1)
+    except OSError:
+        return
+    scan = scan_for_fallback_indicators(raw_bytes, limits=fallback_limits)
+    state.fallback_indicator_counts = dict(scan.indicator_counts)
+    state.fallback_scan_truncated = scan.truncated
 
 
 def _inspect_open_pdf(pdf: pikepdf.Pdf, state: _InspectionState) -> None:
@@ -404,11 +478,16 @@ def _walk_action(action: Object, state: _InspectionState, *, source: str, depth:
     if action_type == "JavaScript":
         state.javascript_action_count += 1
         state.javascript_sources.add(source)
+        js_source = _read_javascript_source(action, state.limits)
+        if js_source is not None:
+            state.javascript_behavior_indicators.update(_javascript_behavior_indicators(js_source))
     elif action_type == "Launch":
         state.launch_action_count += 1
     elif action_type == "URI":
         state.external_uri_count += 1
         _record_uri(action.get(Name.URI), state)
+    elif action_type == "SubmitForm":
+        _record_submit_form_target(action, state)
 
     next_action = action.get(Name.Next)
     if next_action is not None:
@@ -428,6 +507,25 @@ def _action_type(action: Object, state: _InspectionState) -> str:
     return f"Unknown:{safe}"
 
 
+def _parse_target_metadata(raw_value: str, limits: PdfAnalysisLimits) -> dict[str, object]:
+    """Bounded lexical parse of a URL-shaped target string: scheme and hostname
+    only. Query strings, fragments, credentials, and the complete URL are always
+    discarded. No DNS resolution, connection, or redirect ever occurs."""
+    truncated = raw_value[: limits.max_metadata_string_length]
+    try:
+        parsed = urlsplit(truncated)
+        scheme = _bounded_text(parsed.scheme.casefold(), limits, hard_limit=32)
+        hostname = _bounded_text(parsed.hostname or "", limits, hard_limit=128)
+        metadata: dict[str, object] = {"parse_status": "parsed"}
+        if scheme:
+            metadata["scheme"] = scheme
+        if hostname:
+            metadata["hostname"] = hostname
+        return metadata
+    except (UnicodeError, ValueError):
+        return {"parse_status": "invalid"}
+
+
 def _record_uri(uri_object: Object | None, state: _InspectionState) -> None:
     if state.external_uri_count > state.limits.max_uri_count:
         state.partial("uri_action_limit")
@@ -438,20 +536,59 @@ def _record_uri(uri_object: Object | None, state: _InspectionState) -> None:
     if uri_object is None:
         state.uri_metadata.append({"parse_status": "missing"})
         return
-    raw_value = str(uri_object)
-    truncated = raw_value[: state.limits.max_metadata_string_length]
+    state.uri_metadata.append(_parse_target_metadata(str(uri_object), state.limits))
+
+
+def _record_submit_form_target(action: Object, state: _InspectionState) -> None:
+    """Record bounded target metadata only when a SubmitForm action's `/F` entry
+    resolves to a URL-shaped string with an explicit scheme — i.e., a target that
+    leaves the local document context. A target without a scheme is not reported
+    here; the SubmitForm action itself is already captured via the action-type
+    metadata on PDF_OPEN_ACTION/PDF_ADDITIONAL_ACTION regardless."""
+    if len(state.submit_form_targets) >= state.limits.max_uri_metadata_entries:
+        state.submit_form_targets_capped = True
+        return
+    target = action.get(Name.F)
+    if isinstance(target, _MAPPING_OBJECTS):
+        target = target.get(Name.F)
+    if target is None:
+        return
     try:
-        parsed = urlsplit(truncated)
-        scheme = _bounded_text(parsed.scheme.casefold(), state.limits, hard_limit=32)
-        hostname = _bounded_text(parsed.hostname or "", state.limits, hard_limit=128)
-        metadata: dict[str, object] = {"parse_status": "parsed"}
-        if scheme:
-            metadata["scheme"] = scheme
-        if hostname:
-            metadata["hostname"] = hostname
-        state.uri_metadata.append(metadata)
-    except (UnicodeError, ValueError):
-        state.uri_metadata.append({"parse_status": "invalid"})
+        raw_value = str(target)
+    except _PARSER_EXCEPTIONS:
+        return
+    metadata = _parse_target_metadata(raw_value, state.limits)
+    if metadata.get("parse_status") == "parsed" and "scheme" in metadata:
+        state.submit_form_targets.append(metadata)
+        state.external_submission_count += 1
+
+
+def _read_javascript_source(action: Object, limits: PdfAnalysisLimits) -> str | None:
+    """Read a bounded prefix of a structurally-confirmed `/JS` action's script
+    text, for heuristic behavior-indicator matching only. Never returned,
+    persisted, or logged in full; callers must only derive bounded category
+    labels from it."""
+    js = action.get(Name.JS)
+    if js is None:
+        return None
+    try:
+        if isinstance(js, Stream):
+            raw = js.read_bytes()[: limits.max_javascript_scan_bytes]
+            return raw.decode("latin-1", errors="ignore")
+        return str(js)[: limits.max_javascript_scan_bytes]
+    except _PARSER_EXCEPTIONS:
+        return None
+
+
+def _javascript_behavior_indicators(source: str) -> frozenset[str]:
+    """Bounded, heuristic substring match against a fixed API-name vocabulary.
+    Never claims semantic certainty: a match records only that the script text
+    references a known API family, not that it executes or succeeds."""
+    return frozenset(
+        category
+        for category, keywords in _JS_BEHAVIOR_KEYWORDS.items()
+        if any(keyword in source for keyword in keywords)
+    )
 
 
 def _observe_file_spec(file_spec: Object | None, state: _InspectionState) -> None:
@@ -519,6 +656,7 @@ def _result(state: _InspectionState) -> PdfAnalysis:
                     "action_count": state.javascript_action_count,
                     "name_tree_entry_count": state.javascript_name_tree_entries,
                     "sources": sorted(state.javascript_sources),
+                    "behavior_indicators": sorted(state.javascript_behavior_indicators),
                 },
             )
         )
@@ -578,6 +716,17 @@ def _result(state: _InspectionState) -> PdfAnalysis:
                 },
             )
         )
+    if state.external_submission_count:
+        findings.append(
+            finding_payload(
+                "PDF_EXTERNAL_SUBMISSION",
+                {
+                    "count": state.external_submission_count,
+                    "targets_capped": state.submit_form_targets_capped,
+                    "targets": state.submit_form_targets,
+                },
+            )
+        )
     if state.encrypted:
         findings.append(
             finding_payload(
@@ -597,6 +746,19 @@ def _result(state: _InspectionState) -> PdfAnalysis:
     if state.partial_reasons:
         findings.append(
             finding_payload("PDF_PARTIAL_ANALYSIS", {"reasons": sorted(state.partial_reasons)})
+        )
+    if state.fallback_indicator_counts:
+        findings.append(
+            finding_payload(
+                "PDF_FALLBACK_INDICATOR",
+                {
+                    "confidence": "lexical_only",
+                    "method": "lexical-name-token-scan",
+                    "indicators": sorted(state.fallback_indicator_counts),
+                    "indicator_counts": dict(sorted(state.fallback_indicator_counts.items())),
+                    "scan_truncated": state.fallback_scan_truncated,
+                },
+            )
         )
 
     if state.malformed:

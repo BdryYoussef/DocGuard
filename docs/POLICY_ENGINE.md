@@ -2,12 +2,19 @@
 
 ## Authority and version
 
-Policy version `1.0.1` is trusted product code in `app/policies/`. It removes the Phase-1-only
-contract-test marker from production taxonomy. Its normalized registry fingerprint is:
+Policy version `1.0.2` is trusted product code in `app/policies/`. It adds `PDF_EXTERNAL_SUBMISSION`
+and `PDF_FALLBACK_INDICATOR` — both explanatory-only findings with `contribution=0`, no decision
+floor, and no hard-block — for the PDF explainability enhancements described in
+`docs/PDF_ANALYSIS.md`. Its normalized registry fingerprint is:
 
 ```text
-717ac1bbbea13acc61c47a241673ee05616c241318e2c0c691240995f2bf9333
+c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b
 ```
+
+Because both new codes contribute zero score and no decision floor, `1.0.1` and `1.0.2` produce
+byte-identical `risk_score`, `risk_band`, `decision`, and `release_eligible` for every finding-code
+combination that was reachable under `1.0.1` — the version changed because the registry's code
+coverage changed, not because any decision behavior changed. See "Phase 11 comparability" below.
 
 The worker observes characteristics. It does not choose weights, risk bands, decision floors,
 hard-block behavior, release eligibility, policy identity, or the final decision. The legacy worker
@@ -80,9 +87,11 @@ malicious. High or critical collections of heuristics remain `QUARANTINE`; they 
 | `PDF_ACROFORM` | 8 | — | Interactive form |
 | `PDF_XFA` | 24 | — | Unrendered/unexecuted XFA content |
 | `PDF_EXTERNAL_URI` | 8 | — | Passive external URI reference |
+| `PDF_EXTERNAL_SUBMISSION` | 0 | — | Explanatory only: SubmitForm target is external |
 | `PDF_ENCRYPTED` | 8 | — | Encryption capability; completeness is separate |
 | `PDF_PARTIAL_ANALYSIS` | 25 | Q | Incomplete PDF coverage |
 | `PDF_MALFORMED` | 45 | Q | Unreliable malformed structure |
+| `PDF_FALLBACK_INDICATOR` | 0 | — | Explanatory only: bounded lexical evidence from an incomplete parse |
 | `OFFICE_MACRO_ENABLED` | 8 | — | Macro-enabled container |
 | `OFFICE_VBA_MACRO` | 18 | — | VBA project present |
 | `OFFICE_VBA_AUTOEXEC` | 28 | — | Automatic VBA entry point |
@@ -151,6 +160,24 @@ eligibility.
 
 `GET /api/v1/scans/{scan_id}` returns the persisted evaluation. It never silently applies the
 current policy to historical evidence. Explicit policy re-evaluation is out of scope.
+
+## Phase 11 comparability (policy `1.0.1` → `1.0.2`)
+
+The `1.0.2` registry adds exactly two finding codes, both `contribution=0` with no decision floor
+and no hard-block. For any finding-code combination reachable under `1.0.1`:
+
+- neither new code can appear in a `1.0.1`-analyzed sample's findings (the analyzer changes that
+  produce them shipped together with this policy version);
+- when either new code is present under `1.0.2`, it adds `0` to the score sum and no mandatory
+  floor, so `risk_score`, `risk_band`, `decision`, and `release_eligible` are unchanged from what the
+  same underlying structural findings would have produced under `1.0.1`.
+
+The published Phase 11 (`evaluation/results/phase11b/`) headline numbers were produced under policy
+`1.0.1` and are not retroactively rewritten — they remain an accurate historical record of that run.
+They remain directly comparable to a `1.0.2` run on the same corpus: per-sample decisions and risk
+scores are provably identical, so a fresh Phase 11 execution was not required to validate this
+change. A fresh run is still worth doing before the next official release cycle, purely so the
+published headline artifacts reference the currently-shipped policy version string.
 
 ## API explanations and limitations
 

@@ -137,6 +137,15 @@ _DEFINITIONS = (
         "pdf-external-reference",
     ),
     _definition(
+        "PDF_EXTERNAL_SUBMISSION",
+        "PDF form submission to an external target detected",
+        "A structurally-confirmed SubmitForm action targets a URL-shaped destination "
+        "with an explicit scheme; DocGuard records only bounded scheme/hostname "
+        "metadata and never submits data or fetches the target.",
+        "MEDIUM",
+        "pdf-external-reference",
+    ),
+    _definition(
         "PDF_ENCRYPTED",
         "Encrypted PDF detected",
         "The PDF uses encryption or password protection, which is not inherently malicious.",
@@ -157,6 +166,17 @@ _DEFINITIONS = (
         "The PDF parser reported structural damage, so complete analysis cannot be trusted.",
         "HIGH",
         "pdf-structure",
+    ),
+    _definition(
+        "PDF_FALLBACK_INDICATOR",
+        "Bounded lexical indicators observed in a structurally incomplete PDF",
+        "Structural PDF analysis was incomplete or rejected, so DocGuard additionally "
+        "searched the raw bytes for a fixed set of known PDF name-object keywords. "
+        "This is a bounded, non-executing lexical scan, not confirmed PDF object "
+        "traversal: a match here is not equivalent to, and must not be confused with, "
+        "a structurally-confirmed finding such as PDF_JAVASCRIPT or PDF_XFA.",
+        "MEDIUM",
+        "pdf-analysis-limitation",
     ),
     _definition(
         "OFFICE_MACRO_ENABLED",

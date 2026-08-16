@@ -85,6 +85,15 @@ _POLICIES = (
         "The PDF contains XFA content that DocGuard does not render or execute.",
     ),
     _policy("PDF_EXTERNAL_URI", 8, "The PDF contains a passive external URI reference."),
+    # Explanatory enrichment of an already-scored SubmitForm action (captured via
+    # PDF_OPEN_ACTION/PDF_ADDITIONAL_ACTION/PDF_ACROFORM). Zero contribution: this
+    # finding adds no risk information the policy does not already account for, it
+    # only names the destination as external. See docs/POLICY_ENGINE.md.
+    _policy(
+        "PDF_EXTERNAL_SUBMISSION",
+        0,
+        "A form-submission action targets an external destination.",
+    ),
     _policy("PDF_ENCRYPTED", 8, "The PDF uses encryption; completeness is evaluated separately."),
     _policy(
         "PDF_PARTIAL_ANALYSIS",
@@ -97,6 +106,15 @@ _POLICIES = (
         45,
         "Malformed PDF structure prevents reliable complete analysis.",
         minimum=Decision.QUARANTINE,
+    ),
+    # Purely explanatory: PDF_MALFORMED/PDF_PARTIAL_ANALYSIS (and the worker status
+    # they accompany) already force QUARANTINE independent of this finding. Zero
+    # contribution: bounded lexical evidence never adds risk score, and never turns
+    # incomplete analysis into complete analysis. See docs/PDF_ANALYSIS.md.
+    _policy(
+        "PDF_FALLBACK_INDICATOR",
+        0,
+        "Bounded lexical name-token evidence was recovered from an incomplete PDF.",
     ),
     _policy("OFFICE_MACRO_ENABLED", 8, "The Office container is macro-enabled."),
     _policy("OFFICE_VBA_MACRO", 18, "The Office document contains a VBA project."),
@@ -282,7 +300,7 @@ COMPOUND_POLICIES = (
 )
 
 # Deliberately fixed after normalized review. Updating policy code requires updating this value.
-POLICY_FINGERPRINT = "717ac1bbbea13acc61c47a241673ee05616c241318e2c0c691240995f2bf9333"
+POLICY_FINGERPRINT = "c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b"
 
 
 def compute_policy_fingerprint() -> str:

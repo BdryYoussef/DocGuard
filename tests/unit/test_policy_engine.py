@@ -94,7 +94,7 @@ def test_registry_exactly_covers_all_findings_and_is_valid() -> None:
     validate_policy_registry()
 
     assert set(FINDING_POLICIES) == set(FINDING_DEFINITIONS)
-    assert len(FINDING_POLICIES) == 43
+    assert len(FINDING_POLICIES) == 45
     assert all(0 <= policy.contribution <= 100 for policy in FINDING_POLICIES.values())
     assert all(
         policy.hard_block == (policy.minimum_decision is Decision.BLOCK)
@@ -106,7 +106,7 @@ def test_registry_exactly_covers_all_findings_and_is_valid() -> None:
 
 
 def test_policy_version_and_fingerprint_are_deterministic() -> None:
-    assert POLICY_VERSION == "1.0.1"
+    assert POLICY_VERSION == "1.0.2"
     assert compute_policy_fingerprint() == POLICY_FINGERPRINT
     assert len(POLICY_FINGERPRINT) == 64
 

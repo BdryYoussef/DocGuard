@@ -143,6 +143,83 @@ def write_malformed_pdf(path: Path) -> Path:
     return path
 
 
+def write_malformed_pdf_with_indicator_names(
+    path: Path, *, names: tuple[str, ...] = ("JavaScript", "OpenAction")
+) -> Path:
+    """A deliberately unparseable PDF (truncated, no xref/trailer, matching
+    `write_malformed_pdf`'s own hard-reject shape) whose raw bytes still contain
+    the given PDF name-object tokens, literally. For testing the bounded lexical
+    fallback scan when the structural parser cannot traverse the file at all."""
+    body = bytearray(b"%PDF-1.7\n1 0 obj\n<< /Type /Catalog\n")
+    for name in names:
+        body += f"/{name} true\n".encode("ascii")
+    path.write_bytes(bytes(body))
+    return path
+
+
+def write_malformed_pdf_with_hex_escaped_indicator_name(
+    path: Path, *, name: str = "JavaScript"
+) -> Path:
+    """Same hard-reject shape as `write_malformed_pdf_with_indicator_names`, but
+    the token is encoded using the PDF name `#XX` hex-escape syntax throughout,
+    matching the obfuscation style used by external malicious-PDF generators."""
+    encoded = "".join(f"#{byte:02x}" for byte in name.encode("ascii"))
+    body = f"%PDF-1.7\n1 0 obj\n<< /Type /Catalog\n/{encoded} true\n".encode("ascii")
+    path.write_bytes(body)
+    return path
+
+
+def write_malformed_pdf_with_benign_mentions(path: Path) -> Path:
+    """Same hard-reject shape, but the indicator words appear only as ordinary
+    parenthesized PDF *string* content (never as a `/Name` token) — the fallback
+    scan must not mistake this for active-content evidence."""
+    body = (
+        b"%PDF-1.7\n1 0 obj\n<< /Type /Catalog\n"
+        b"(This document casually mentions JavaScript and OpenAction in prose.)\n"
+    )
+    path.write_bytes(body)
+    return path
+
+
+def write_gotoe_additional_action_pdf(path: Path) -> Path:
+    """A structurally-valid PDF whose page-open additional action ("O" trigger)
+    is a `/S /GoToE` (go-to-embedded) action, matching the CVE-2018-4993-style
+    structure external tooling generates."""
+    with _new_pdf() as pdf:
+        additional = Dictionary()
+        additional[Name("/O")] = pdf.make_indirect(
+            Dictionary(S=Name.GoToE, D=String("embedded-destination"))
+        )
+        pdf.Root.AA = additional
+        _save(pdf, path)
+    return path
+
+
+def write_external_submit_form_pdf(
+    path: Path, *, target: str = "https://example.invalid/submit?field=value"
+) -> Path:
+    with _new_pdf() as pdf:
+        pdf.Root.OpenAction = pdf.make_indirect(Dictionary(S=Name.SubmitForm, F=String(target)))
+        _save(pdf, path)
+    return path
+
+
+def write_local_submit_form_pdf(path: Path) -> Path:
+    with _new_pdf() as pdf:
+        pdf.Root.OpenAction = pdf.make_indirect(
+            Dictionary(S=Name.SubmitForm, F=String("local-form-target"))
+        )
+        _save(pdf, path)
+    return path
+
+
+def write_javascript_behavior_pdf(path: Path, *, script: str) -> Path:
+    with _new_pdf() as pdf:
+        pdf.Root.OpenAction = pdf.make_indirect(Dictionary(S=Name.JavaScript, JS=String(script)))
+        _save(pdf, path)
+    return path
+
+
 def write_multiple_actions_pdf(path: Path) -> Path:
     with _new_pdf() as pdf:
         javascript = _javascript_action(pdf)
@@ -231,10 +308,17 @@ __all__ = [
     "write_benign_pdf",
     "write_embedded_file_pdf",
     "write_encrypted_pdf",
+    "write_external_submit_form_pdf",
+    "write_gotoe_additional_action_pdf",
+    "write_javascript_behavior_pdf",
     "write_javascript_name_tree_pdf",
     "write_javascript_pdf",
     "write_launch_action_pdf",
+    "write_local_submit_form_pdf",
     "write_malformed_pdf",
+    "write_malformed_pdf_with_benign_mentions",
+    "write_malformed_pdf_with_hex_escaped_indicator_name",
+    "write_malformed_pdf_with_indicator_names",
     "write_multiple_actions_pdf",
     "write_open_action_pdf",
     "write_open_destination_pdf",
