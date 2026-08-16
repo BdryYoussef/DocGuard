@@ -4,26 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}DocGuard{% endblock %}</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
   <link rel="stylesheet" href="/static/app.css">
   <script src="/static/app.js" defer></script>
 </head>
 <body>
+  {% import "partials/icons.html" as icons %}
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="topbar">
-    <a class="brand" href="/app"><span>DocGuard</span><small>Isolated document security gateway</small></a>
+    <a class="brand" href="/app">
+      <img class="wordmark" src="/static/brand/docguard-wordmark-white.png" alt="DocGuard" width="128" height="28">
+    </a>
+    <span class="topbar-divider" aria-hidden="true"></span>
     <nav aria-label="Primary navigation">
-      <a href="/app"{% if active == 'dashboard' %} aria-current="page"{% endif %}>Dashboard</a>
-      <a href="/app/scans"{% if active == 'scans' %} aria-current="page"{% endif %}>Scans</a>
-      <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>Quarantine</a>
-      <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>Sanitized</a>
-      <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>Audit</a>
+      <a href="/app"{% if active == 'dashboard' %} aria-current="page"{% endif %}>{{ icons.icon_dashboard("icon") }}Dashboard</a>
+      <a href="/app/scans"{% if active == 'scans' %} aria-current="page"{% endif %}>{{ icons.icon_documents("icon") }}Documents</a>
+      <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>{{ icons.icon_quarantine("icon") }}Quarantine</a>
+      <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>{{ icons.icon_sanitized("icon") }}Sanitized</a>
+      <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>{{ icons.icon_audit("icon") }}Audit</a>
     </nav>
-    <form method="post" action="/logout" class="logout-form">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <span class="operator-name">{{ principal.username }}</span>
-      <button type="submit" class="button button-quiet">Logout</button>
-    </form>
+    <div class="session-cluster">
+      <span class="operator-identity">{{ icons.icon_operator("icon") }}<span>{{ principal.username }}</span></span>
+      <form method="post" action="/logout" class="logout-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="button button-quiet">{{ icons.icon_sign_out("icon") }}Logout</button>
+      </form>
+    </div>
   </header>
-  <main class="shell">
+  <main class="shell motion-stagger" id="main" tabindex="-1">
     {% block content %}{% endblock %}
   </main>
 </body>

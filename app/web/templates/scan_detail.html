@@ -1,10 +1,87 @@
 {% extends "base.html" %}{% block title %}Scan {{ scan.id[:8] }} · DocGuard{% endblock %}
 {% block content %}
-<div class="page-heading"><div><p class="eyebrow">Scan result</p><h1>{{ scan.display_filename }}</h1><p class="mono">{{ scan.id }}</p></div><span class="badge badge-{{ result.decision|lower }} badge-large">{{ result.decision }}</span></div>
-<section class="decision-panel decision-{{ result.decision|lower }}"><h2>{{ result.decision }}</h2><p>{{ decision_messages[result.decision] }}</p>{% if result.decision == 'BLOCK' %}<p><strong>BLOCK cannot be overridden by an operator in V1.</strong></p>{% endif %}</section>
-<section class="grid grid-two"><article class="card"><h2>Analysis</h2><dl class="details"><dt>Detected type</dt><dd>{{ result.detected_type or 'Unknown' }}</dd><dt>Analysis status</dt><dd>{{ result.analysis_status }}</dd><dt>Risk score</dt><dd>{{ result.risk_score }} · {{ result.risk_band }}</dd><dt>Release eligible</dt><dd>{{ 'Yes' if result.release_eligible else 'No' }}</dd><dt>Policy</dt><dd>{{ result.policy_version }}</dd><dt>Uploaded</dt><dd>{{ scan.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</dd></dl></article>
-<article class="card"><h2>Policy reasons</h2>{% if result.decision_reasons %}<ul class="reason-list">{% for reason in result.decision_reasons %}<li><code>{{ reason.code }}</code><span>{{ reason.explanation }}</span></li>{% endfor %}</ul>{% else %}<p class="empty-state">No additional policy reasons.</p>{% endif %}</article></section>
-<section class="card"><div class="section-heading"><h2>Findings</h2><span>{{ result.findings|length }}</span></div>{% if result.findings %}<div class="finding-list">{% for finding in result.findings %}<article class="finding"><div><span class="badge severity-{{ finding.severity|lower }}">{{ finding.severity }}</span><code>{{ finding.code }}</code></div><h3>{{ finding.title }}</h3><p>{{ finding.description }}</p><p><strong>Category:</strong> {{ finding.category }}</p>{% if finding.mitre_techniques %}<p><strong>Related ATT&amp;CK:</strong> {{ finding.mitre_techniques|join(', ') }}</p>{% endif %}{% if finding.metadata %}<dl class="metadata">{% for key, value in finding.metadata.items() %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}</dl>{% endif %}</article>{% endfor %}</div>{% else %}<p class="empty-state">No modeled risky characteristics were reported.</p>{% endif %}</section>
-<section class="card"><h2>PDF sanitization</h2>{% if artifact and derived %}<div class="lineage"><div><span>Original</span><strong class="badge badge-{{ result.decision|lower }}">{{ result.decision }}</strong></div><div><span>Sanitized derivative</span><strong class="badge badge-allow">{{ derived.decision }}</strong></div><div><span>Artifact</span><strong class="badge badge-allow">APPROVED</strong></div></div><a class="button button-primary" href="/api/v1/artifacts/{{ artifact.id }}/download">Download approved sanitized PDF</a>{% elif cdr_eligibility.eligible %}<p>Trusted eligibility permits raster reconstruction and mandatory re-analysis.</p><form class="cdr-form" data-scan-id="{{ scan.id }}" data-csrf-token="{{ csrf_token }}"><button type="submit" class="button button-primary">Generate sanitized PDF</button><p class="hint" aria-live="polite"></p></form>{% else %}<p class="muted">This document is not eligible for PDF sanitization.</p>{% endif %}</section>
+{% import "partials/icons.html" as icons %}
+{% set decision_icon = {'ALLOW': icons.icon_allow, 'REVIEW': icons.icon_review, 'QUARANTINE': icons.icon_hold, 'BLOCK': icons.icon_block} %}
+{% set decision_next = {
+  'ALLOW': 'This document may be released according to policy. ALLOW is not proof the document is benign.',
+  'REVIEW': 'An operator should examine the findings below before this document is released.',
+  'QUARANTINE': 'The original document must remain unavailable. Check whether a sanitized derivative is possible below.',
+  'BLOCK': 'Policy prohibits release. BLOCK cannot be overridden by an operator.'
+} %}
+<div class="page-heading"><div><h1 class="text-page-title">{{ scan.display_filename }}</h1><p class="mono text-meta">{{ scan.id }}</p></div></div>
+
+<section class="decision-panel decision-{{ result.decision|lower }}">
+  {{ decision_icon[result.decision]("icon") }}
+  <div>
+    <h2>{{ result.decision }}</h2>
+    <p class="decision-meaning">{{ decision_messages[result.decision] }}</p>
+    <p class="decision-next">{{ decision_next[result.decision] }}</p>
+    {% if result.decision_reasons %}
+    <ul class="decision-reasons">
+      {% for reason in result.decision_reasons %}<li>{{ reason.explanation }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <h2 class="text-section-title">Analysis summary</h2>
+  <dl class="rail">
+    <div><dt>Detected type</dt><dd>{{ result.detected_type or 'Unknown' }}</dd></div>
+    <div><dt>Analysis status</dt><dd>{{ result.analysis_status }}</dd></div>
+    <div><dt>Risk score</dt><dd>{{ result.risk_score }} · {{ result.risk_band }}</dd></div>
+    <div><dt>Release eligible</dt><dd>{{ 'Yes' if result.release_eligible else 'No' }}</dd></div>
+    <div><dt>Policy version</dt><dd class="mono">{{ result.policy_version }}</dd></div>
+    <div><dt>Uploaded</dt><dd><time datetime="{{ scan.created_at.isoformat() }}">{{ scan.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></dd></div>
+  </dl>
+</section>
+
+<section class="section">
+  <div class="section-heading"><h2 class="text-section-title">Evidence</h2><span class="text-meta">{{ result.findings|length }} finding{{ '' if result.findings|length == 1 else 's' }}</span></div>
+  {% if result.findings %}
+  <div class="finding-rows motion-stagger">
+    {% for finding in result.findings %}
+    {% set is_lexical = finding.code == 'PDF_FALLBACK_INDICATOR' %}
+    {% set contribution = (result.contributions | selectattr('code', 'equalto', finding.code) | first) %}
+    <article class="finding-row" data-confidence="{{ 'lexical' if is_lexical else 'structural' }}">
+      <span class="severity-chip severity-{{ finding.severity|lower }}">{{ finding.severity }}</span>
+      <div class="finding-body">
+        <h3 class="text-card-title">{{ finding.title }}</h3>
+        <p class="text-body-secondary">{{ finding.description }}</p>
+        {% if is_lexical %}<p class="text-body-secondary evidence-note">Structural analysis of this document was incomplete, so DocGuard additionally searched the raw file for a fixed set of known indicator tokens. This is a bounded lexical clue only — it was not confirmed by complete parser traversal.</p>{% endif %}
+        <p class="finding-meta">{{ finding.category }}{% if is_lexical %} · <span class="evidence-tag">{{ icons.icon_inspect("icon") }}Bounded lexical evidence</span>{% else %} · structural evidence{% endif %}{% if finding.mitre_techniques %} · {{ finding.mitre_techniques|join(', ') }}{% endif %}</p>
+        {% if finding.metadata or contribution %}
+        <details class="disclosure disclosure-compact"><summary>Technical details</summary><div class="disclosure-body">
+          <dl class="metadata">
+            <dt>Finding code</dt><dd><code>{{ finding.code }}</code></dd>
+            {% if contribution %}<dt>Risk contribution</dt><dd>+{{ contribution.contribution }}</dd>{% endif %}
+            {% for key, value in finding.metadata.items() %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+          </dl>
+        </div></details>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}<div class="empty-state">{{ icons.icon_allow("icon") }}<strong>No modeled risky characteristics were reported</strong></div>{% endif %}
+</section>
+
+<section class="panel"><h2 class="text-section-title">PDF sanitization</h2>
+  {% if artifact and derived %}
+  <p class="text-body-secondary">The original stays exactly as received. This is a separately reconstructed, fully re-analyzed derivative.</p>
+  <div class="lineage">
+    <div class="lineage-step" data-role="source"><span class="text-label">Original source</span><strong class="badge badge-{{ result.decision|lower }}">{{ result.decision }}</strong><span class="text-body-secondary">Contained — remains unavailable for download</span></div>
+    <div class="lineage-connector">{{ icons.icon_sanitized("icon") }}</div>
+    <div class="lineage-step" data-role="derived"><span class="text-label">Derived sanitized artifact</span><strong class="badge badge-allow">{{ derived.decision }}</strong><span class="text-body-secondary">Fully re-analyzed after reconstruction</span></div>
+  </div>
+  <a class="button button-primary" href="/api/v1/artifacts/{{ artifact.id }}/download">{{ icons.icon_sanitized("icon") }}Download approved sanitized PDF</a>
+  {% elif cdr_eligibility.eligible %}
+  <p class="text-body-secondary">The original stays contained. Trusted eligibility permits raster reconstruction into a new derivative document, followed by mandatory full re-analysis before anything is released.</p>
+  <form class="cdr-form" data-scan-id="{{ scan.id }}" data-csrf-token="{{ csrf_token }}"><button type="submit" class="button button-primary">{{ icons.icon_sanitized("icon") }}Generate sanitized PDF</button><p class="hint" aria-live="polite"></p></form>
+  {% else %}
+  <p class="muted">This document is not eligible for PDF sanitization.{% if result.decision == 'BLOCK' %} A BLOCK decision has no sanitization path — reconstruction cannot bypass a hard policy violation.{% endif %}</p>
+  {% if cdr_eligibility.reason_codes %}<details class="disclosure disclosure-compact"><summary>Why not eligible</summary><div class="disclosure-body"><ul class="reason-list">{% for code in cdr_eligibility.reason_codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul></div></details>{% endif %}
+  {% endif %}
+</section>
 <p class="disclaimer">DocGuard's risk score is a deterministic policy score, not a probability that a file is malicious. ALLOW is not proof that a document is benign. CDR reduces active document functionality by reconstructing visual content. It does not prove the output is benign. The CDR output is re-analyzed before approval.</p>
 {% endblock %}

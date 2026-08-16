@@ -1,1 +1,14 @@
-{% extends "base.html" %}{% block title %}Request error · DocGuard{% endblock %}{% block content %}<section class="card error-card"><h1>Request could not be completed</h1><p>{{ message }}</p><a href="/app" class="button button-primary">Return to dashboard</a></section>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Request error · DocGuard{% endblock %}
+{% block content %}
+{% import "partials/icons.html" as icons %}
+<section class="surface error-card">
+  {{ icons.icon_hold("icon") }}
+  <h1 class="text-page-title">Request could not be completed</h1>
+  <p class="text-body-secondary">{{ message }}</p>
+  {% if request_id %}<p class="text-meta text-mono">Reference: {{ request_id }}</p>{% endif %}
+  <div class="cluster">
+    <a href="/app" class="button button-primary">{{ icons.icon_dashboard("icon") }}Return to dashboard</a>
+  </div>
+</section>
+{% endblock %}

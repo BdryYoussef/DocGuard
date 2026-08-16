@@ -3,22 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login · DocGuard</title>
+  <title>Sign in · DocGuard</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
   <link rel="stylesheet" href="/static/app.css">
 </head>
-<body class="login-body">
-  <main class="login-card">
-    <div class="brand login-brand"><span>DocGuard</span><small>Isolated and Explainable Security Gateway for Untrusted Business Documents</small></div>
-    <h1>Operator login</h1>
-    <p class="muted">Authorized operators only.</p>
-    {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
-    <form method="post" action="/login" class="stack">
-      <label for="username">Username</label>
-      <input id="username" name="username" type="text" autocomplete="username" maxlength="64" required autofocus>
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
-      <button type="submit" class="button button-primary">Login</button>
-    </form>
-  </main>
+<body>
+  {% import "partials/icons.html" as icons %}
+  <a class="skip-link" href="#login-main">Skip to content</a>
+  <div class="login-shell">
+    <div class="login-context motion-enter">
+      <a class="brand" href="/">
+        <img class="wordmark" src="/static/brand/docguard-wordmark-white.png" alt="DocGuard" width="150" height="33">
+      </a>
+      <h1>Isolated inspection for untrusted business documents</h1>
+      <p>Every submitted document is analyzed inside a disposable, isolated worker and
+        given an explainable ALLOW, REVIEW, QUARANTINE or BLOCK decision before an
+        employee ever opens it.</p>
+      <ul>
+        <li>{{ icons.icon_allow("icon") }}Structural PDF, Office and archive inspection</li>
+        <li>{{ icons.icon_allow("icon") }}Deterministic, versioned policy — never a black-box score</li>
+        <li>{{ icons.icon_allow("icon") }}PDF reconstruction with mandatory re-analysis before release</li>
+      </ul>
+    </div>
+    <main class="login-form-side" id="login-main" tabindex="-1">
+      <div class="login-card motion-enter-scale">
+        <h2>Operator sign-in</h2>
+        <p class="muted">Authorized operators only.</p>
+        {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+        <form method="post" action="/login" class="stack">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" maxlength="64" required autofocus>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+          <button type="submit" class="button button-primary button-block">{{ icons.icon_sign_in("icon") }}Sign in</button>
+        </form>
+      </div>
+    </main>
+  </div>
 </body>
 </html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DocGuard — Document security checkpoint</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  {% import "partials/icons.html" as icons %}
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="public-header">
+    <a class="brand" href="/">
+      <img class="wordmark" src="/static/brand/docguard-wordmark-white.png" alt="DocGuard" width="136" height="30">
+    </a>
+    <a class="button button-primary" href="/login">{{ icons.icon_sign_in("icon") }}Sign in</a>
+  </header>
+  <main id="main" tabindex="-1">
+    <div class="hero-band">
+      <div class="public-main">
+        <section class="hero">
+          <div class="hero-copy motion-enter">
+            <h1>Inspect suspicious business documents before anyone opens them.</h1>
+            <p>DocGuard analyzes untrusted PDFs, Office documents and archives in an isolated
+              worker, explains exactly what it observed, and applies a deterministic
+              policy decision before an employee ever sees the original file.</p>
+            <div class="cluster">
+              <a class="button button-primary" href="/login">{{ icons.icon_sign_in("icon") }}Sign in</a>
+              <a class="button button-quiet" href="#workflow">How DocGuard works</a>
+            </div>
+          </div>
+          <div class="hero-diagram motion-stagger">
+            <p class="hero-diagram-eyebrow">How a document is processed</p>
+            <div class="checkpoint-visual" aria-hidden="true">
+              <div class="checkpoint-stage">
+                <div class="checkpoint-frame">
+                  <span class="bracket bracket-tl"></span><span class="bracket bracket-tr"></span>
+                  <span class="bracket bracket-bl"></span><span class="bracket bracket-br"></span>
+                  {{ icons.icon_documents("icon checkpoint-glyph") }}
+                </div>
+                <span class="checkpoint-label">Untrusted document</span>
+              </div>
+              <div class="checkpoint-connector"><span class="checkpoint-connector-arrow"></span></div>
+              <div class="checkpoint-stage checkpoint-stage-focus">
+                <div class="checkpoint-frame checkpoint-frame-active">
+                  <span class="bracket bracket-tl"></span><span class="bracket bracket-tr"></span>
+                  <span class="bracket bracket-bl"></span><span class="bracket bracket-br"></span>
+                  {{ icons.icon_inspect("icon checkpoint-glyph") }}
+                </div>
+                <span class="checkpoint-label">Isolated inspection</span>
+              </div>
+              <div class="checkpoint-connector"><span class="checkpoint-connector-arrow"></span></div>
+              <div class="checkpoint-stage">
+                <div class="checkpoint-markers">
+                  <span class="badge badge-allow">Allow</span>
+                  <span class="badge badge-review">Review</span>
+                  <span class="badge badge-quarantine">Quarantine</span>
+                  <span class="badge badge-block">Block</span>
+                </div>
+                <span class="checkpoint-label">Policy decision</span>
+              </div>
+            </div>
+            <p class="hero-diagram-foot">Isolated analysis, deterministic policy — never a silent pass-through.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="public-main">
+      <section class="landing-section motion-reveal" id="workflow">
+        <h2 class="text-section-title">How every submission is handled</h2>
+        <ol class="narrative-flow motion-stagger-reveal">
+          <li>
+            <span class="narrative-index">01</span>
+            <div>
+              <h3 class="text-card-title">Receive</h3>
+              <p class="text-body-secondary">An operator submits one or more untrusted business
+                documents for inspection.</p>
+            </div>
+          </li>
+          <li>
+            <span class="narrative-index">02</span>
+            <div>
+              <h3 class="text-card-title">Isolate</h3>
+              <p class="text-body-secondary">Parsing and detection happen inside a disposable,
+                network-disabled worker — never inside the trusted application.</p>
+            </div>
+          </li>
+          <li>
+            <span class="narrative-index">03</span>
+            <div>
+              <h3 class="text-card-title">Explain</h3>
+              <p class="text-body-secondary">Structural findings are translated into bounded,
+                human-readable evidence — never a raw, unexplained score.</p>
+            </div>
+          </li>
+          <li>
+            <span class="narrative-index">04</span>
+            <div>
+              <h3 class="text-card-title">Decide</h3>
+              <p class="text-body-secondary">A deterministic policy produces exactly one of four
+                outcomes.</p>
+              <dl class="decision-legend">
+                <div><dt><span class="badge badge-allow">Allow</span></dt><dd>DocGuard did not observe risky characteristics covered by the configured model.</dd></div>
+                <div><dt><span class="badge badge-review">Review</span></dt><dd>The document requires human attention before release.</dd></div>
+                <div><dt><span class="badge badge-quarantine">Quarantine</span></dt><dd>Significant risk or incomplete analysis requires containment.</dd></div>
+                <div><dt><span class="badge badge-block">Block</span></dt><dd>A hard security rule prevents release. Operators cannot override BLOCK in this release.</dd></div>
+              </dl>
+            </div>
+          </li>
+          <li>
+            <span class="narrative-index">05</span>
+            <div>
+              <h3 class="text-card-title">Reconstruct, when eligible</h3>
+              <p class="text-body-secondary">Eligible PDFs can be rebuilt through Content Disarm
+                and Reconstruction into a separate derived artifact, fully re-analyzed before it
+                is ever offered for release.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="landing-section motion-reveal" id="architecture">
+        <h2 class="text-section-title">A real trust boundary, not a black box</h2>
+        <p class="text-body-secondary boundary-intro">Every submission crosses from the trusted
+          application into a disposable worker that can only ever report back a bounded,
+          versioned result — never raw access to anything it touched.</p>
+        <div class="boundary motion-stagger-reveal">
+          <div class="boundary-zone boundary-trusted">
+            <span class="text-label boundary-zone-label">Trusted zone</span>
+            <ul class="boundary-components">
+              <li>{{ icons.icon_dashboard("icon") }}FastAPI</li>
+              <li>{{ icons.icon_operator("icon") }}Authentication &amp; CSRF</li>
+              <li>{{ icons.icon_review("icon") }}Policy engine</li>
+              <li>{{ icons.icon_documents("icon") }}SQLite</li>
+              <li>{{ icons.icon_audit("icon") }}Audit log</li>
+              <li>{{ icons.icon_sanitized("icon") }}Artifact authorization</li>
+            </ul>
+          </div>
+          <div class="boundary-divider">
+            <span class="boundary-divider-line"></span>
+            <span class="boundary-divider-text">
+              <span class="boundary-divider-label">Security trust boundary</span>
+              <span class="boundary-divider-note">versioned JSON only</span>
+            </span>
+            <span class="boundary-divider-line"></span>
+          </div>
+          <div class="boundary-zone boundary-untrusted">
+            <span class="text-label boundary-zone-label">Disposable untrusted worker</span>
+            <ul class="boundary-components">
+              <li>{{ icons.icon_document("icon") }}PDF parser</li>
+              <li>{{ icons.icon_documents("icon") }}Office parser</li>
+              <li>{{ icons.icon_quarantine("icon") }}ZIP analyzer</li>
+              <li>{{ icons.icon_inspect("icon") }}YARA rules</li>
+              <li>{{ icons.icon_hold("icon") }}Lexical fallback</li>
+              <li>{{ icons.icon_sanitized("icon") }}CDR renderer</li>
+            </ul>
+            <div class="boundary-constraints">
+              <span class="evidence-tag">No network</span>
+              <span class="evidence-tag">Bounded CPU</span>
+              <span class="evidence-tag">Bounded memory</span>
+              <span class="evidence-tag">Bounded time</span>
+              <span class="evidence-tag">Bounded output</span>
+            </div>
+          </div>
+        </div>
+        <details class="disclosure disclosure-editorial">
+          <summary>Technical overview <span class="disclosure-caption">— isolation, policy, and reconstruction details</span></summary>
+          <div class="disclosure-body text-body-secondary">
+            <p>All hostile parsing happens inside the disposable worker shown above — never in
+              the trusted application. A deterministic policy evaluation turns the observed
+              structure into one of the four decisions below. Eligible PDFs can additionally go
+              through PDF Content Disarm and Reconstruction (CDR), which reconstructs a
+              derived, sanitized document and is always followed by mandatory re-analysis of
+              that output before anything is approved for release. An ALLOW decision means no
+              covered risky characteristic was observed under the active policy — it is not a
+              guarantee that a document is benign.</p>
+          </div>
+        </details>
+      </section>
+
+      <section class="landing-section landing-section-tight motion-reveal">
+        <div class="cta-band">
+          <div>
+            <h2 class="text-section-title">Ready to inspect a document?</h2>
+            <p>Sign in with an authorized operator account.</p>
+          </div>
+          <a class="button button-primary" href="/login">{{ icons.icon_sign_in("icon") }}Sign in</a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="public-footer">
+    <div class="public-main">
+      <img class="wordmark wordmark-footer" src="/static/brand/docguard-wordmark.png" alt="DocGuard" width="110" height="24">
+      <p>Isolated and explainable security gateway for untrusted business documents.</p>
+    </div>
+  </footer>
+</body>
+</html>

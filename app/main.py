@@ -42,6 +42,7 @@ from app.orchestrator.factory import create_isolation_backend
 from app.orchestrator.scan_service import ScanService
 from app.orchestrator.service import AnalysisOrchestrator
 from app.storage.paths import StoragePaths
+from app.web.public import router as public_router
 from app.web.routes import router as web_router
 from app.web.security import apply_security_headers
 
@@ -138,6 +139,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(artifacts_router)
     app.include_router(audit_router)
     app.include_router(web_router)
+    app.include_router(public_router)
 
     @app.middleware("http")
     async def browser_security_and_session(request: Request, call_next):  # type: ignore[no-untyped-def]
