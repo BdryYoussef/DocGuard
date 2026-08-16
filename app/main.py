@@ -163,14 +163,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return response
         raw_token = request.cookies.get(active_settings.effective_session_cookie_name)
         principal = None
-        if not request.url.path.startswith("/static/"):
+        authentication_attempted = not request.url.path.startswith("/static/")
+        if authentication_attempted:
             try:
                 principal = authentication_service.authenticate(raw_token)
             except AuthenticationPersistenceError:
                 logger.exception("session_authentication_failed")
         request.state.principal = principal
         response = await call_next(request)
-        if raw_token is not None and principal is None:
+        if authentication_attempted and raw_token is not None and principal is None:
             clear_session_cookie(response, active_settings)
         apply_security_headers(request, response, active_settings)
         response.headers["X-Request-ID"] = request_id

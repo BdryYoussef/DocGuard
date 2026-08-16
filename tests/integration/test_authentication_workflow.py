@@ -444,6 +444,114 @@ async def test_cookie_and_browser_security_headers_are_environment_specific(
 
 
 @pytest.mark.asyncio
+async def test_static_asset_requests_do_not_clear_a_valid_session_cookie(
+    tmp_path: Path,
+) -> None:
+    """Regression guard for a real bug: `request.state.principal` is
+    intentionally left `None` for `/static/*` paths (static assets never
+    authenticate), but the middleware's invalid-cookie cleanup had no matching
+    exclusion — it read "principal is None" as "invalid session" and deleted a
+    perfectly valid session cookie on every authenticated static-asset request.
+    A real browser hits this on its very first page load (CSS/JS/font/image
+    requests), logging the operator out before they can navigate anywhere."""
+    app = create_app(auth_settings(tmp_path))
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app),
+            base_url="http://test",
+            follow_redirects=False,
+        ) as client,
+    ):
+        Base.metadata.create_all(app.state.database_engine)
+        csrf = await authenticate_operator(app, client)
+        del csrf
+        session_cookie_before = client.cookies.get("docguard_session")
+        assert session_cookie_before
+
+        css_response = await client.get("/static/app.css")
+        assert css_response.status_code == 200
+        assert "set-cookie" not in css_response.headers
+
+        js_response = await client.get("/static/app.js")
+        assert js_response.status_code == 200
+        assert "set-cookie" not in js_response.headers
+
+        assert client.cookies.get("docguard_session") == session_cookie_before
+
+
+@pytest.mark.asyncio
+async def test_anonymous_static_asset_access_is_unaffected(tmp_path: Path) -> None:
+    app = create_app(auth_settings(tmp_path))
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client,
+    ):
+        Base.metadata.create_all(app.state.database_engine)
+        response = await client.get("/static/app.css")
+        assert response.status_code == 200
+        assert "set-cookie" not in response.headers
+
+
+@pytest.mark.asyncio
+async def test_invalid_session_cookie_on_protected_route_is_still_cleared(
+    tmp_path: Path,
+) -> None:
+    """The static-path exclusion must stay scoped to static paths only —
+    an invalid cookie presented on a real protected route is still rejected
+    and still actively cleared, exactly as before this fix."""
+    app = create_app(auth_settings(tmp_path))
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app),
+            base_url="http://test",
+            follow_redirects=False,
+        ) as client,
+    ):
+        Base.metadata.create_all(app.state.database_engine)
+        client.cookies.set("docguard_session", "x" * 43)
+        response = await client.get("/app")
+        assert response.status_code == 303
+        assert response.headers["location"] == "/login"
+        assert "set-cookie" in response.headers
+        assert "Max-Age=0" in response.headers["set-cookie"]
+
+
+@pytest.mark.asyncio
+async def test_session_survives_dashboard_static_assets_then_a_second_protected_page(
+    tmp_path: Path,
+) -> None:
+    """End-to-end reproduction of the real browser sequence that exposed the
+    bug: log in, load the dashboard, load its static assets (as any real
+    browser does automatically), then navigate to a second protected page.
+    The operator must remain authenticated throughout."""
+    app = create_app(auth_settings(tmp_path))
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app),
+            base_url="http://test",
+            follow_redirects=False,
+        ) as client,
+    ):
+        Base.metadata.create_all(app.state.database_engine)
+        csrf = await authenticate_operator(app, client)
+        del csrf
+
+        dashboard = await client.get("/app")
+        assert dashboard.status_code == 200
+
+        for asset in ("/static/app.css", "/static/app.js"):
+            asset_response = await client.get(asset)
+            assert asset_response.status_code == 200
+
+        scans_page = await client.get("/app/scans")
+        assert scans_page.status_code == 200
+        assert '<h1 class="text-page-title">Scans</h1>' in scans_page.text
+
+
+@pytest.mark.asyncio
 async def test_session_cleanup_is_bounded_dry_run_then_explicit_apply(tmp_path: Path) -> None:
     app = create_app(auth_settings(tmp_path))
     async with (
