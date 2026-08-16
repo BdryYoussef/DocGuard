@@ -136,8 +136,17 @@ detection behavior):
 DOCGUARD_ENV=development \
 DOCGUARD_ISOLATION_BACKEND=unsafe-development \
 DOCGUARD_ALLOW_UNSAFE_DEVELOPMENT_BACKEND=true \
+DOCGUARD_APPLICATION_ORIGIN=http://127.0.0.1:8000 \
 .venv/bin/uvicorn app.main:create_app --factory
 ```
+
+`DOCGUARD_APPLICATION_ORIGIN` must exactly match the scheme, host, and port the
+browser actually uses. `application_origin` otherwise defaults to
+`https://127.0.0.1:8000` — a mismatched scheme against this plain-HTTP dev server
+causes the existing (correct, and not to be weakened) same-origin check to reject
+every authenticated fetch-based request — CSRF-protected form submissions and page
+navigations are unaffected, so login still succeeds and the dashboard still loads,
+which makes the failure easy to mistake for a session/authentication problem.
 
 ## Test commands
 

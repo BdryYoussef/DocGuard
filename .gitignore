@@ -28,3 +28,11 @@ var/**
 build/
 dist/
 *.egg-info/
+
+# Claude Code local development tooling: personal/machine-specific settings and
+# third-party design-skill bundles, not DocGuard product, doc, or test material.
+# .claude/rules/ is intentionally tracked (referenced by CLAUDE.md for frontend work).
+.claude/*
+!.claude/rules/
+.agents/
+skills-lock.json
