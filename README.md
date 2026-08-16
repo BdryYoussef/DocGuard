@@ -2,7 +2,7 @@
 
 **An isolated and explainable security gateway for untrusted business documents.**
 
-Release `1.0.0`. See `docs/RELEASE_NOTES.md` for the full release summary and
+Release `1.1.0`. See `docs/RELEASE_NOTES.md` for the full release summary and
 `docs/DEFENSE_GUIDE.md` for a jury-oriented explanation of the project.
 
 ## Problem
@@ -119,6 +119,11 @@ These results describe behavior on this specific controlled corpus and documente
 detection model — **not** a general malware-detection rate. Full methodology,
 pre-registration hashes, and every retained artifact: `docs/EVALUATION.md` and
 `evaluation/results/phase11b/`.
+
+The current release (policy `1.0.2`) was separately revalidated against the identical
+frozen corpus (Phase 11C) with identical results — decision compliance, recall,
+benign-escalation, fail-secure, and CDR outcomes all reproduced exactly. See
+`docs/EVALUATION.md` Part B and `evaluation/results/phase11c/`.
 
 ## Quick development setup
 

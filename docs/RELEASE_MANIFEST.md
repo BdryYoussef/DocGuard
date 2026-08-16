@@ -1,5 +1,81 @@
 # DocGuard Release Manifest
 
+This file is cumulative release history. The `v1.0.0` manifest below is preserved
+exactly as originally recorded — read as a record of that release, not the current
+one. Current release: **v1.1.0** (this section).
+
+---
+
+## v1.1.0 release manifest
+
+### Release identity
+
+| Identity | Value |
+| --- | --- |
+| Application release version | `1.1.0` (`pyproject.toml`, FastAPI app metadata) — bumped from `1.0.0` |
+| Release commit | this commit (`git log -1` / `git show v1.1.0 --no-patch`) — a self-referencing commit cannot record its own hash in advance |
+| Evaluated application-code commit | `f18961ccee2ba6215befabddd3275b93e16271f2` |
+| Evaluation-evidence commit | `99a32e557b1139204901ea2bd720db513bd02c8e` (Phase 11C completion) |
+| Alembic migration head | unchanged from `v1.0.0` — no new migration in this release |
+| Python version | `3.14.4` |
+
+**Important**: the release commit itself contains only release-metadata/documentation
+changes (this manifest, release notes, version strings) staged on top of the
+evaluation-evidence commit `99a32e5`. It is **not** the commit Phase 11C evaluated —
+that was `f18961c`. Verified before recording this manifest: `git diff --stat f18961c
+HEAD` between the evaluated commit and the pre-release-commit HEAD touched only
+`docs/EVALUATION.md` and `evaluation/results/phase11c/*` — zero changes under `app/`,
+`worker/`, `docguard_contract/`, `tests/`, or `scripts/`. No runtime/application code
+changed between the evaluated commit and this release.
+
+Application release version remains a **separate identity** from the three detection/
+integrity identities below.
+
+### Detection/integrity identities
+
+| Identity | Version | Fingerprint | Changed from v1.0.0? |
+| --- | --- | --- | --- |
+| Policy registry | `1.0.2` | `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` | Yes — see `docs/POLICY_ENGINE.md` §"Phase 11 comparability" |
+| YARA rule pack | `2026.08.1` | `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` | No |
+| PDF CDR sanitizer | `1.0.0` | `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` | No |
+
+### Test result (pre-release-commit quality gate)
+
+Full suite: **516 passed**. `ruff format --check` clean, `ruff check` clean,
+`mypy --strict app worker docguard_contract evaluation scripts` clean. Real Bubblewrap
+isolation suite: **10 passed, 0 skipped**
+(`tests/integration/test_bubblewrap_isolation.py`).
+
+### Controlled validation basis
+
+| Identity | Value |
+| --- | --- |
+| Corpus version | `11A.1` |
+| Corpus case count | 59 |
+| Frozen corpus-definition hashes | unchanged from `v1.0.0` — re-verified byte-for-byte before Phase 11C (see `docs/EVALUATION.md` §31) |
+| Historical evaluation (unchanged) | `evaluation/results/phase11b/` — policy `1.0.1`, commit `b94d373` |
+| Current-release revalidation (new) | `evaluation/results/phase11c/` — policy `1.0.2`, commit `f18961c` |
+
+Within the frozen 59-case controlled synthetic corpus and documented detection model,
+DocGuard policy `1.0.2` reproduced all pre-registered decision expectations and
+covered all pre-registered risky characteristics: decision compliance 59/59,
+risky-case recall 41/41, finding recall 72/72, benign ALLOW 18/18, benign escalation
+0/18, fail-secure 9/9, CDR recovery 2/2 — identical to Phase 11B's historical result.
+This is a controlled, self-constructed synthetic corpus, not an independent
+adversarial benchmark; `ALLOW` does not establish that a document is benign. Full
+detail: `docs/EVALUATION.md` Part B; historical Phase 11B evidence is untouched.
+
+### What did not change in v1.1.0
+
+No change to authentication, session/CSRF handling, CSP, worker isolation, the
+Bubblewrap sandbox profile, CDR semantics, audit semantics, dependency locks, or the
+qualified production topology. See `docs/RELEASE_NOTES.md` "Security invariants
+preserved" for the v1.1.0 entry.
+
+---
+
+## v1.0.0 release manifest (historical)
+
 Recorded at Phase 12 qualification time for the `v1.0.0` academic release. No secrets or
 private host paths are included below.
 

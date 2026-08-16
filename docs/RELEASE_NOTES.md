@@ -1,3 +1,133 @@
+# DocGuard Release Notes
+
+This file is cumulative release history. The `1.0.0` release notes below are preserved
+exactly as originally written — read as a record of that release, not the current one.
+Current release: **1.1.0** (this section).
+
+---
+
+# DocGuard 1.1.0 Release Notes
+
+Feature-freeze release. This document is factual and deliberately conservative — see
+`docs/DEFENSE_GUIDE.md` §J/§K/§M for the exact required wording around decisions and
+evaluation results.
+
+## Release identity
+
+- Application release version: **1.1.0** (`pyproject.toml`, FastAPI app metadata) —
+  bumped from `1.0.0`.
+- Policy version: **1.0.2** (bumped from `1.0.1`), fingerprint
+  `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b`.
+- YARA rule pack (`2026.08.1`) and PDF CDR sanitizer (`1.0.0`) are unchanged from the
+  `1.0.0` release. These four identities are independent — see `docs/RELEASE_MANIFEST.md`.
+
+## Why 1.1.0, not a patch release
+
+Since `1.0.0`, DocGuard gained backward-compatible operator-facing functionality and a
+policy addition — new capability, not merely bug fixes — which is a minor-version-level
+change under the versioning convention this project follows.
+
+## Highlights
+
+- Bounded multi-file upload queue on the operator dashboard: up to 20 queued files,
+  concurrency limit 2, each file submitted as an independent scan through the
+  unmodified single-file upload endpoint.
+- Printable per-scan evidence report (`GET /app/scans/{scan_id}/report`): a read-only,
+  authenticated, print-optimized page an operator can save as PDF via the browser's
+  native print dialog. It never re-analyzes the document or re-evaluates policy.
+- Policy `1.0.2` explainability additions and a public architecture/trust-boundary page
+  explaining the isolation model.
+
+## Security analysis improvements
+
+- Policy `1.0.2` adds two zero-contribution, no-hard-block, no-decision-floor
+  explainability finding codes: `PDF_FALLBACK_INDICATOR` (bounded lexical evidence
+  recovered from an incomplete PDF, including GoToE and external SubmitForm target
+  recognition) and `PDF_EXTERNAL_SUBMISSION` (names an external form-submission
+  destination on an already-scored action). Neither changes any score or decision on
+  its own — see `docs/POLICY_ENGINE.md` §"Phase 11 comparability."
+- Bounded JavaScript behavior indicators and GoToE (go-to-embedded) action recognition
+  in the PDF analyzer, and bounded parser-failure lexical fallback evidence when
+  structural analysis cannot complete — still explicitly distinguished from
+  structurally-confirmed findings in the UI and in every report.
+
+## Operator workflow
+
+- Multi-file upload queue: bounded (20 files, 2 concurrent), each file an independent
+  scan, one failure never blocks the rest of the batch, single CSRF token reused across
+  the batch.
+- Evidence report action on the scan detail page ("Evidence report"), producing a
+  standalone printable document with document identity, decision, rationale, findings,
+  fallback-evidence distinction, CDR lineage where applicable, and limitations —
+  without gating essential evidence behind a collapsed disclosure.
+- Redesigned operator UI and public marketing/landing page: the DocGuard wordmark
+  replaces the prior icon+text lockup as the sole brand identity, a locally-sourced
+  same-origin Manrope typeface replaces the prior font stack (no remote font/CDN), and
+  the public landing page gained a trust-boundary architecture diagram (trusted
+  application vs. disposable worker) and a rebalanced decision-explanation grid.
+
+## Evidence/reporting
+
+- The evidence report is explicitly **not digitally signed or cryptographically
+  tamper-evident** in this release — it is an authenticated presentation of persisted
+  evidence, not a certificate. See `docs/OPERATOR_WORKFLOW.md` §7.
+- Report generation performs no analysis, re-evaluation, or worker invocation, and
+  creates no new database records; "Report generated at" is clearly distinct
+  presentation metadata from the document's own "Document analyzed at" timestamp.
+
+## Validation
+
+- **Phase 11C current-release revalidation**: the identical frozen 59-case Phase 11
+  corpus (`11A.1`) re-executed once through the real Bubblewrap-isolated production
+  path against the current release (application code evaluated at commit `f18961c`,
+  policy `1.0.2`). Within that frozen 59-case controlled synthetic corpus and
+  documented detection model, DocGuard policy `1.0.2` reproduced all pre-registered
+  decision expectations and covered all pre-registered risky characteristics —
+  identical decision compliance (59/59), risky-case recall (41/41), finding recall
+  (72/72), benign-ALLOW (18/18), benign-escalation (0/18), fail-secure (9/9), and CDR
+  outcomes to the original Phase 11B (policy `1.0.1`) evaluation.
+- This is a controlled, self-constructed synthetic corpus, not an independent
+  adversarial benchmark, and it does not establish that `ALLOW` means a document is
+  benign. Full methodology, comparison tables, and result-artifact hashes:
+  `docs/EVALUATION.md` Part B; retained artifacts: `evaluation/results/phase11c/`.
+  The original Phase 11B evidence (`evaluation/results/phase11b/`) is untouched and
+  remains the historical record of the `1.0.0` release.
+
+## Security invariants preserved
+
+No change to the trust boundary, authentication, session/CSRF handling, CSP, worker
+isolation, Bubblewrap sandbox profile, CDR semantics (source decision immutability,
+BLOCK CDR-ineligibility, mandatory re-analysis of derived artifacts), or audit
+semantics. The evidence report introduces no raw-document exposure, no source-download
+capability, and no BLOCK override/release affordance — verified in
+`tests/integration/test_scan_evidence_report.py`.
+
+## Known limitations
+
+Everything documented for `1.0.0` below still applies. In addition:
+
+- The evidence report is not digitally signed or tamper-evident (see "Evidence/reporting"
+  above); a hash-chained audit log remains unimplemented and separately optional.
+- No seccomp-bpf syscall-filtering layer under Bubblewrap; isolation relies on
+  namespaces, dropped capabilities, and resource limits.
+- Analysis remains synchronous within the request lifecycle (no background scheduler);
+  the multi-file queue is a client-side fan-out over that same synchronous endpoint.
+- Phase 11C validates the *current release* against the *same* synthetic, self-
+  constructed corpus as Phase 11B — it is not a larger or independent corpus, and any
+  external malicious-PDF validation work remains deliberately separate from these
+  percentages.
+
+## Upgrade / operational notes
+
+- No database migration is required beyond the existing `alembic upgrade head` (no new
+  tables or columns were introduced by this release).
+- No configuration, environment variable, or CSP change is required.
+- Operators printing an evidence report in Firefox should disable "Print headers and
+  footers" in the print dialog for a clean exported PDF — a browser-level setting
+  outside DocGuard's control (see `docs/OPERATOR_WORKFLOW.md` §7).
+
+---
+
 # DocGuard 1.0.0 Release Notes
 
 Final academic release. This document is factual and deliberately conservative — see
