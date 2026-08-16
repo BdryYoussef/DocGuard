@@ -8,7 +8,7 @@
   'QUARANTINE': 'The original document must remain unavailable. Check whether a sanitized derivative is possible below.',
   'BLOCK': 'Policy prohibits release. BLOCK cannot be overridden by an operator.'
 } %}
-<div class="page-heading"><div><h1 class="text-page-title">{{ scan.display_filename }}</h1><p class="mono text-meta">{{ scan.id }}</p></div></div>
+<div class="page-heading"><div><h1 class="text-page-title">{{ scan.display_filename }}</h1><p class="mono text-meta">{{ scan.id }}</p></div><a class="button button-quiet" href="/app/scans/{{ scan.id }}/report">{{ icons.icon_document("icon") }}Evidence report</a></div>
 
 <section class="decision-panel decision-{{ result.decision|lower }}">
   {{ decision_icon[result.decision]("icon") }}

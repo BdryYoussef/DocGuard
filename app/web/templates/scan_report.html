@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evidence report · {{ scan.display_filename }} · DocGuard</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body class="report-body">
+{% import "partials/icons.html" as icons %}
+{% set decision_icon = {'ALLOW': icons.icon_allow, 'REVIEW': icons.icon_review, 'QUARANTINE': icons.icon_hold, 'BLOCK': icons.icon_block} %}
+{% set decision_next = {
+  'ALLOW': 'This document may be released according to policy. ALLOW is not proof the document is benign.',
+  'REVIEW': 'An operator should examine the findings below before this document is released.',
+  'QUARANTINE': 'The original document must remain unavailable.',
+  'BLOCK': 'Policy prohibits release. BLOCK cannot be overridden by an operator.'
+} %}
+<a class="skip-link" href="#report-main">Skip to content</a>
+<header class="report-header">
+  <div class="report-header-brand">
+    <img class="wordmark report-wordmark-screen" src="/static/brand/docguard-wordmark-white.png" alt="DocGuard" width="128" height="28">
+    <img class="wordmark report-wordmark-print" src="/static/brand/docguard-wordmark.png" alt="DocGuard" width="128" height="28">
+    <span class="report-header-title">Document Security Evidence Report</span>
+  </div>
+  <div class="report-header-actions">
+    <a class="button button-quiet" href="/app/scans/{{ scan.id }}">{{ icons.icon_documents("icon") }}Back to scan</a>
+    <button type="button" class="button button-primary" data-action="print-report">{{ icons.icon_document("icon") }}Print / Save as PDF</button>
+  </div>
+</header>
+<main class="report-main" id="report-main" tabindex="-1">
+
+  <section class="report-section" aria-labelledby="report-document">
+    <h2 id="report-document" class="text-section-title">Document</h2>
+    <dl class="metadata report-grid">
+      <dt>Filename</dt><dd>{{ scan.display_filename }}</dd>
+      <dt>Scan ID</dt><dd class="mono">{{ scan.id }}</dd>
+      <dt>Detected type</dt><dd>{{ result.detected_type or 'Unknown' }}</dd>
+      {% if result.detected_mime %}<dt>Detected MIME</dt><dd class="mono">{{ result.detected_mime }}</dd>{% endif %}
+      <dt>Size</dt><dd>{{ scan.size_bytes|filesizeformat }}</dd>
+      <dt>SHA-256</dt><dd class="mono">{{ scan.sha256 }}</dd>
+      <dt>Document analyzed at</dt><dd><time datetime="{{ (scan.analysis_completed_at or scan.created_at).isoformat() }}">{{ (scan.analysis_completed_at or scan.created_at).strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
+    </dl>
+    {% if scan.origin == 'CDR_DERIVED' and source %}
+    <p class="text-body-secondary report-note">This scan is a <strong>derived artifact</strong> reconstructed from source scan <a class="mono" href="/app/scans/{{ source.id }}">{{ source.id }}</a> (<strong>{{ source.decision }}</strong>). See "Sanitization lineage" below.</p>
+    {% endif %}
+  </section>
+
+  <section class="report-section report-decision-section report-avoid-break" aria-labelledby="report-decision">
+    <h2 id="report-decision" class="text-section-title">Decision</h2>
+    <div class="decision-panel decision-{{ result.decision|lower }}">
+      {{ decision_icon[result.decision]("icon") }}
+      <div>
+        <h3 class="report-decision-word">{{ result.decision }}</h3>
+        <p class="decision-meaning">{{ decision_messages[result.decision] }}</p>
+        <p class="decision-next">{{ decision_next[result.decision] }}</p>
+      </div>
+    </div>
+    <dl class="metadata report-grid">
+      <dt>Release eligible</dt><dd>{{ 'Yes' if result.release_eligible else 'No' }}</dd>
+      <dt>Analysis status</dt><dd>{{ result.analysis_status }}</dd>
+      <dt>Analysis complete</dt><dd>{{ 'Yes' if result.analysis_complete else 'No' }}</dd>
+      <dt>Risk score</dt><dd>{{ result.risk_score }} · {{ result.risk_band }}</dd>
+      <dt>Policy version</dt><dd class="mono">{{ result.policy_version }}</dd>
+      {% if result.policy_fingerprint %}<dt>Policy fingerprint</dt><dd class="mono report-hash">{{ result.policy_fingerprint }}</dd>{% endif %}
+    </dl>
+    <p class="text-body-secondary report-note">DocGuard's risk score is a deterministic policy score, not a probability that a file is malicious.{% if result.decision == 'ALLOW' %} ALLOW means DocGuard did not observe risky characteristics covered by the configured detection model.{% endif %}</p>
+  </section>
+
+  {% if result.decision_reasons %}
+  <section class="report-section" aria-labelledby="report-why">
+    <h2 id="report-why" class="text-section-title">Why this decision</h2>
+    <ul class="decision-reasons">
+      {% for reason in result.decision_reasons %}<li>{{ reason.explanation }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section class="report-section" aria-labelledby="report-findings">
+    <div class="section-heading"><h2 id="report-findings" class="text-section-title">Findings</h2><span class="text-meta">{{ result.findings|length }} finding{{ '' if result.findings|length == 1 else 's' }}</span></div>
+    {% if result.findings %}
+    <div class="finding-rows">
+      {% for finding in result.findings %}
+      {% set is_lexical = finding.code == 'PDF_FALLBACK_INDICATOR' %}
+      {% set contribution = (result.contributions | selectattr('code', 'equalto', finding.code) | first) %}
+      <article class="finding-row report-avoid-break" data-confidence="{{ 'lexical' if is_lexical else 'structural' }}">
+        <span class="severity-chip severity-{{ finding.severity|lower }}">{{ finding.severity }}</span>
+        <div class="finding-body">
+          <h3 class="text-card-title">{{ finding.title }}</h3>
+          <p class="text-body-secondary">{{ finding.description }}</p>
+          {% if is_lexical %}<p class="text-body-secondary evidence-note">Structural analysis of this document was incomplete, so DocGuard additionally searched the raw file for a fixed set of known indicator tokens. This is bounded lexical evidence only (confidence: lexical-only) — it was not confirmed by complete parser traversal and is not equivalent to a structurally-confirmed finding.</p>{% endif %}
+          <p class="finding-meta">{{ finding.category }}{% if is_lexical %} · <span class="evidence-tag">{{ icons.icon_inspect("icon") }}Bounded lexical evidence</span>{% else %} · structural evidence{% endif %}{% if finding.mitre_techniques %} · {{ finding.mitre_techniques|join(', ') }}{% endif %}</p>
+          {% if finding.metadata or contribution %}
+          <dl class="metadata report-finding-metadata">
+            <dt>Finding code</dt><dd><code>{{ finding.code }}</code></dd>
+            {% if contribution %}<dt>Risk contribution</dt><dd>+{{ contribution.contribution }}</dd>{% endif %}
+            {% for key, value in finding.metadata.items() %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+          </dl>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}<div class="empty-state">{{ icons.icon_allow("icon") }}<strong>No modeled risky characteristics were reported</strong></div>{% endif %}
+  </section>
+
+  {% if artifact and derived %}
+  <section class="report-section report-avoid-break" aria-labelledby="report-lineage">
+    <h2 id="report-lineage" class="text-section-title">Sanitization lineage</h2>
+    <p class="text-body-secondary">The original stays exactly as received and its decision above never changes. This is a separately reconstructed, fully re-analyzed derivative document.</p>
+    <div class="lineage">
+      <div class="lineage-step" data-role="source"><span class="text-label">Original source</span><strong class="badge badge-{{ result.decision|lower }}">{{ result.decision }}</strong><span class="text-body-secondary">Contained — remains unavailable for download</span></div>
+      <div class="lineage-connector">{{ icons.icon_sanitized("icon") }}</div>
+      <div class="lineage-step" data-role="derived"><span class="text-label">Derived sanitized artifact</span><strong class="badge badge-allow">{{ derived.decision }}</strong><span class="text-body-secondary">Fully re-analyzed after reconstruction — <a href="/app/scans/{{ derived.id }}/report">view derived scan report</a></span></div>
+    </div>
+    <dl class="metadata report-grid">
+      <dt>Artifact ID</dt><dd class="mono">{{ artifact.id }}</dd>
+      <dt>Sanitizer version</dt><dd class="mono">{{ artifact.sanitizer_version }}</dd>
+      <dt>Generated at</dt><dd><time datetime="{{ artifact.created_at.isoformat() }}">{{ artifact.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
+    </dl>
+  </section>
+  {% elif cdr_eligibility.eligible %}
+  <section class="report-section" aria-labelledby="report-lineage">
+    <h2 id="report-lineage" class="text-section-title">Sanitization lineage</h2>
+    <p class="muted">This scan is eligible for PDF sanitization (CDR) but no sanitized derivative has been generated yet.</p>
+  </section>
+  {% endif %}
+
+  <section class="report-section" aria-labelledby="report-provenance">
+    <h2 id="report-provenance" class="text-section-title">Technical provenance</h2>
+    <dl class="metadata report-grid">
+      <dt>Document analyzed at</dt><dd><time datetime="{{ (scan.analysis_completed_at or scan.created_at).isoformat() }}">{{ (scan.analysis_completed_at or scan.created_at).strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
+      <dt>Report generated at</dt><dd><time datetime="{{ report_generated_at.isoformat() }}">{{ report_generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
+      <dt>Report requested by</dt><dd>{{ principal.username }}</dd>
+    </dl>
+  </section>
+
+  <section class="report-section report-limitations" aria-labelledby="report-limitations">
+    <h2 id="report-limitations" class="text-section-title">Limitations</h2>
+    <p class="text-body-secondary">DocGuard performs static structural detection according to its configured, versioned policy — it does not execute or dynamically detonate documents. <strong>ALLOW does not guarantee that a document is benign</strong>; it means no risky characteristic covered by the configured detection model was observed. Incomplete analysis (encrypted, malformed, resource-limited, or timed-out input) fails closed and is never silently treated as ALLOW. This report reflects DocGuard's persisted result for this scan under the policy version shown above — it is a read-only presentation of that stored evidence, generated at the time shown, and is <strong>not digitally signed or cryptographically tamper-evident</strong> in this release.</p>
+  </section>
+
+</main>
+</body>
+</html>

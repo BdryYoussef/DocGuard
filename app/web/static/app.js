@@ -413,3 +413,9 @@ document.querySelectorAll('.cdr-form').forEach((candidate) => {
     }
   });
 });
+
+// Evidence report: browser-native print, operator-initiated only — never
+// triggered automatically on page load.
+document.querySelectorAll('[data-action="print-report"]').forEach((button) => {
+  button.addEventListener('click', () => window.print());
+});

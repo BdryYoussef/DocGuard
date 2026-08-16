@@ -63,7 +63,32 @@ persistence, authorization, lineage, or integrity fails, the download fails clos
 server-generated attachment name, `application/pdf`, `nosniff`, and `Cache-Control: no-store,
 private`. Source and BLOCK documents never have a download action.
 
-## 7. Audit and logout
+## 7. Evidence report
+
+Any scan detail page has an **Evidence report** action at `GET
+/app/scans/{scan_id}/report` — a standalone, printable page for the same
+operator session and authorization as the scan detail page it links from
+(no separate capability, no share token, no unauthenticated access).
+
+Opening the report performs no analysis, re-evaluation, or worker
+invocation: it renders the same persisted scan, findings, and policy
+evaluation the scan detail page already shows, plus a server-generated
+"Report generated at" timestamp that is presentation metadata only and is
+not persisted. Essential evidence — document identity, decision, rationale,
+findings, fallback-lexical-evidence distinction, and CDR lineage where
+applicable — is present in the printable page by default, not gated behind
+a collapsed disclosure. The **Print / Save as PDF** button uses the
+browser's native print dialog; DocGuard does not generate PDFs server-side
+and the report is never triggered automatically.
+
+Like the scan detail page, the report never exposes raw/source document
+bytes, a quarantine download link, or a BLOCK override/release affordance.
+It is an authenticated presentation of already-persisted evidence, not a
+cryptographically signed or tamper-evident certificate, and ALLOW shown on
+a report carries the same limitation as everywhere else in DocGuard: it is
+not proof that the document is benign.
+
+## 8. Audit and logout
 
 The Audit page and bounded API show newest-first application security events, including operator
 identity for login, upload, CDR request, artifact download, and logout. Details are allowlisted and
