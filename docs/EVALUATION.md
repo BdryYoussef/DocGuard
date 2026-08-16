@@ -1,5 +1,19 @@
 # DocGuard Phase 11 Evaluation
 
+This document has two parts, kept clearly separate:
+
+- **Part A — §1–29, Historical Phase 11B.** The original official controlled
+  benchmark, executed once under policy `1.0.1`. Frozen, immutable evidence —
+  never edited, rewritten, or re-labeled after the fact. Read it as a record
+  of what was true at that commit and policy version, not as a description
+  of the current release.
+- **Part B — §30–43, Phase 11C current-release revalidation.** A *new*,
+  separate run of the identical frozen 59-case corpus against current HEAD
+  and policy `1.0.2`, added later to check whether the current release still
+  behaves the way Phase 11B measured. It does not replace, supersede, or
+  average with Part A — it is a compatibility check, reported alongside the
+  original, not instead of it.
+
 ## 1. Objective
 
 Phase 11 measures how well DocGuard's *existing, frozen* detection model (Phase 10)
@@ -386,3 +400,214 @@ it. That run:
 
 The official Phase 11B benchmark reported above began only after that ground truth was
 frozen (section 6) and used exclusively the real Bubblewrap-isolated production path.
+
+---
+
+# Part B — Phase 11C: current-release revalidation
+
+## 30. Objective and scope
+
+Phase 11C answers a narrower, different question than Phase 11B: **does the current
+release (current Git commit, policy `1.0.2`, current analyzers, real Bubblewrap
+isolation) still reproduce the controlled behavior Phase 11B measured under policy
+`1.0.1`, on the identical frozen corpus?** It is a compatibility/regression check, not
+a new benchmark. No corpus case, fixture, ground-truth expectation, CDR flag, or
+finding requirement was added, removed, or altered. No policy weight or threshold was
+changed to make results match — the run either reproduced the historical behavior or
+it did not, and it did (section 34).
+
+## 31. Frozen corpus identity re-verification
+
+Recomputed immediately before the Phase 11C run and compared against the section 6
+values recorded before Phase 11B:
+
+| File | SHA-256 | Matches section 6 |
+| --- | --- | --- |
+| `evaluation/corpus_manifest.json` | `c7959cc3f1e28a2663ae06c6d1585624f1c542dea8493c6247aea70fe3e8afd0` | Yes |
+| `evaluation/corpus.py` | `656bbec78e0fecaced9129054ba2f2f7a76123c66cc5cafa5609a75986ccad83` | Yes |
+| `evaluation/models.py` | `e8824dac3650d63715b0b91eaa5a9fb44c1d3ab65fed8ec2ff23ea906c9c9191` | Yes |
+| `evaluation/manifest.py` | `62f257276d1f403de9e0878d62833d9af642887be9ccce13912ac16c01affaaa` | Yes |
+
+All four files are byte-for-byte identical to the Phase 11B checkpoint. `--validate-manifest`
+passed (59 cases, zero duplicate case IDs) before execution.
+
+## 32. Current release identity
+
+| Identity | Value |
+| --- | --- |
+| Git commit | `f18961ccee2ba6215befabddd3275b93e16271f2` |
+| Application version | `1.0.0` (`pyproject.toml`; unchanged — see `docs/RELEASE_NOTES.md` and the recommendation in the Phase 11C completion report) |
+| Policy version / fingerprint | `1.0.2` / `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` |
+| YARA rule pack version / SHA-256 | `2026.08.1` / `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` (unchanged from Phase 11B) |
+| Sanitizer version / fingerprint | `1.0.0` / `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` (unchanged from Phase 11B) |
+| Isolation backend | `bubblewrap` (confirmed real: `bubblewrap 0.11.1` captured by shelling out to the real binary, not the `unsafe-development` interface-smoke-test backend) |
+| Python version | `3.14.4` |
+
+## 33. Execution
+
+Executed with the same runner used for Phase 11B, against all 59 case IDs explicitly
+(the runner has no "run everything" flag by design — see `evaluation/README.md`):
+
+```bash
+python -m scripts.run_evaluation --validate-manifest
+python -m scripts.run_evaluation --execute --case-id <all 59 case IDs> \
+    --output-dir evaluation/results/phase11c
+```
+
+The dedicated resilience-sequence check (section 38) was run separately, calling
+`evaluation.runner.execute_mode(["PDF-BEN-001", "PDF-RISK-012", "PDF-BEN-002"])` and
+writing it with the same `write_results_json()` helper Phase 11B used — the identical
+method, not a new one. Every case is a real `POST /api/v1/scans` call through
+`create_app(settings)` behind an `httpx.ASGITransport`, using the real Bubblewrap
+backend; no detector or analyzer helper function was called directly.
+
+## 34. Results summary
+
+| Metric | Phase 11B (1.0.1) | Phase 11C (1.0.2) |
+| --- | --- | --- |
+| Cases completed | 59/59 | 59/59 |
+| Decision compliance | 59/59 (100%) | 59/59 (100%) |
+| Risky-case detection recall | 41/41 (100%) | 41/41 (100%) |
+| Finding-level recall | 72/72 (100%) | 72/72 (100%) |
+| Benign ALLOW rate | 18/18 (100%) | 18/18 (100%) |
+| Benign escalation rate | 0/18 (0%) | 0/18 (0%) |
+| Fail-secure rate | 9/9 (100%) | 9/9 (100%) |
+| CDR recovery rate | 2/2 (100%) | 2/2 (100%) |
+| Completeness — COMPLETE | 44 | 44 |
+| Completeness — INTENTIONAL_PARTIAL | 10 | 10 |
+| Completeness — PARSER_FAILURE | 3 | 3 |
+| Completeness — RESOURCE_LIMIT_FAILURE | 1 | 1 |
+| Completeness — OTHER_FAIL_CLOSED | 1 | 1 |
+
+Every decision-affecting metric reproduced **exactly**, case for case — not merely the
+same aggregate percentages, but zero missing expected findings and zero unexpected
+findings on any of the 59 cases (verified directly from `results.json`, not inferred
+from the summary alone).
+
+## 35. Latency comparison
+
+| Statistic | Phase 11B (1.0.1) | Phase 11C (1.0.2) |
+| --- | --- | --- |
+| count | 59 | 59 |
+| mean | 288.9 ms | 228.2 ms |
+| median | 317.0 ms | 252.0 ms |
+| min | 136 ms | 115 ms |
+| max | 590 ms | 452 ms |
+| p95 | 386 ms | 300 ms |
+
+Phase 11C was measurably faster across every statistic on this run. Per the same
+caveat as Phase 11B (section 20): this is a descriptive statistic from one run on one
+shared development host, not a controlled microbenchmark — the difference is plausibly
+ordinary host load/cache variance between two separate sessions, not a claimed
+performance improvement. No causal interpretation is drawn from it.
+
+## 36. Explainability deltas observed
+
+Policy/analyzer `1.0.2` added two zero-contribution, no-hard-block, no-decision-floor
+finding codes: `PDF_FALLBACK_INDICATOR` and `PDF_EXTERNAL_SUBMISSION` (see
+`docs/POLICY_ENGINE.md` §"Phase 11 comparability"). **Neither code appeared in any of
+the 59 Phase 11C results** (`grep`-verified against the raw `results.json`, zero
+matches). The frozen corpus's fixtures do not happen to exercise the specific new
+lexical-fallback or external-SubmitForm code paths these two codes cover. This is an
+honest, checked observation, not an assumption: the explainability additions exist and
+are exercised elsewhere (see `tests/unit/test_pdf_explainability_enhancements.py` and
+`tests/integration/test_pdf_explainability_policy_impact.py`), but this specific
+59-case corpus does not happen to trigger them, so Phase 11C provides no evidence
+either way about their detection behavior — only that their presence causes no
+regression on the cases that don't trigger them.
+
+## 37. CDR outcomes
+
+| Case | Source decision | CDR eligible | Derived decision | Derived release-eligible | Source decision unchanged |
+| --- | --- | --- | --- | --- | --- |
+| PDF-RISK-003 | QUARANTINE | true | ALLOW | true | **true** |
+| PDF-RISK-006 | REVIEW | true | ALLOW | true | **true** |
+| PDF-RISK-010 (BLOCK) | BLOCK | **false** | — | — | **true** |
+
+Identical outcome shape to Phase 11B section 22: both eligible cases recovered to a
+release-eligible derived ALLOW artifact, the BLOCK case was correctly CDR-ineligible
+with no derived scan ever created, and all three source decisions were re-confirmed
+unchanged after the CDR request.
+
+## 38. Resilience sequence
+
+Re-run as the same dedicated three-case ordered sequence (not part of the 59-case
+aggregate metrics):
+
+| Case | Decision | Worker status |
+| --- | --- | --- |
+| PDF-BEN-001 | ALLOW | SUCCESS |
+| PDF-RISK-012 | QUARANTINE | FAILED (fail-closed, as pre-registered) |
+| PDF-BEN-002 | ALLOW | SUCCESS |
+
+Identical result shape to Phase 11B section 19: the induced malformed-PDF failure
+failed closed exactly as pre-registered, and the very next valid upload processed
+normally immediately afterward, with no degradation or manual intervention.
+
+## 39. Historical artifact integrity verification
+
+Before and after the Phase 11C run, `evaluation/results/phase11b/` was verified
+byte-for-byte unchanged against the version already committed at `HEAD` (`git diff
+--quiet HEAD -- evaluation/results/phase11b/` reported no difference). Nothing under
+that directory was read-modified, rewritten, re-labeled, or touched by this task.
+
+## 40. Unexpected results
+
+**None.** All 59 cases matched their pre-registered expectations exactly — the same
+outcome as Phase 11B section 23. No discrepancy requiring classification occurred.
+
+## 41. What Phase 11C does NOT prove, and its relationship to Phase 11B
+
+Everything in Part A section 4 and section 27 applies identically here — Phase 11C is
+**not** a malware-detection benchmark, **not** evidence against adversarial or
+real-world samples, and **not** proof that `ALLOW` implies a document is safe to open.
+In addition:
+
+- Phase 11C does **not** replace, invalidate, or supersede Phase 11B. Phase 11B remains
+  the original official evaluation of the release it measured; Phase 11C is later
+  evidence that the *current* release still behaves the same way on the same corpus.
+- Phase 11C provides no detection-behavior evidence for the two new `1.0.2`
+  explainability finding codes, since this corpus does not exercise them (section 36).
+- Both phases share the same known limitation: a synthetic, self-constructed,
+  59-case corpus, not an independent or adversarial benchmark. External malicious-PDF
+  validation work, where it exists, is deliberately kept separate and is never blended
+  into these percentages — see `docs/DEFENSE_GUIDE.md` §N/O.
+
+**Preferred summary wording:** "Within the frozen 59-case controlled synthetic corpus
+and documented detection model, the current release preserved all pre-registered
+decision expectations and covered all pre-registered risky characteristics." Not:
+"100% detection rate," "DocGuard detects all malicious PDFs," or "all files were safe."
+
+## 42. Result artifact hashes
+
+`evaluation/results/phase11c/` (new; `evaluation/results/phase11b/` is untouched):
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `metrics.json` | `137d28563e14f39091f4d6cf1ee1b96ac40e459925c6a422c8602525a3ce6f66` |
+| `results.json` | `50be15085490e89a132c1125b875c9e349b31a6d3a320b5c5c662c19039fc30e` |
+| `results.csv` | `d9663e36a05b5ccb0585e876c3cf155450875391858cb9f4c70e4b47080a570e` |
+| `report.md` | `a0692b331c60ffb568ab96971987aded91228e54d877cf676f1565e50e2b7334` |
+| `resilience_sequence.json` | `66b6b78ccc227d4cb408bc5a81b3933d2ffd78b207da981ae1d15dd9da73dd53` |
+
+A future reviewer can verify the exact code, policy, and corpus evaluated by
+recomputing section 31's four hashes, comparing `git_commit`/`policy_fingerprint` in
+`metrics.json` against `git rev-parse HEAD` and `app.policies.registry.POLICY_FINGERPRINT`
+at that commit, and recomputing this table's hashes over the retained files.
+
+## 43. Reproduction instructions (Phase 11C)
+
+```bash
+# safe, no-execution verification
+sha256sum evaluation/corpus_manifest.json evaluation/corpus.py evaluation/models.py evaluation/manifest.py
+python -m scripts.run_evaluation --validate-manifest
+
+# official execution (real Bubblewrap backend, all 59 case IDs)
+python -m scripts.run_evaluation --list-cases   # to obtain the current case-id list
+python -m scripts.run_evaluation --execute --case-id <...59 ids...> \
+    --output-dir evaluation/results/phase11c
+```
+
+Compare the resulting `metrics.json`/`results.json` against section 34 and against
+`evaluation/results/phase11b/` for the historical comparison — never overwrite either
+directory when reproducing this.

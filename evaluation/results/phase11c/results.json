@@ -1,0 +1,1638 @@
+{
+  "metadata": {
+    "bubblewrap_version": "bubblewrap 0.11.1",
+    "corpus_case_count": 59,
+    "corpus_version": "11A.1",
+    "git_commit": "f18961ccee2ba6215befabddd3275b93e16271f2",
+    "platform": "Linux-x86_64",
+    "policy_fingerprint": "c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b",
+    "policy_version": "1.0.2",
+    "python_version": "3.14.4",
+    "qpdf_version": "qpdf version 12.3.2",
+    "sanitizer_fingerprint": "46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2",
+    "sanitizer_version": "1.0.0",
+    "timestamp": "2026-08-16T18:45:46.252836Z",
+    "worker_dependency_versions": {
+      "PyMuPDF": "1.28.2",
+      "defusedxml": "0.7.1",
+      "olefile": "0.47",
+      "oletools": "0.60.2",
+      "pikepdf": "10.11.0",
+      "yara-python": "4.5.4"
+    },
+    "yara_rule_pack_sha256": "7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7",
+    "yara_rule_pack_version": "2026.08.1"
+  },
+  "results": [
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "ARC-BEN-001",
+      "category": "BENIGN_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 271,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "ARC-BEN-002",
+      "category": "BENIGN_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 273,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "ARC-BEN-003",
+      "category": "BENIGN_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 262,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "ARC-BEN-004",
+      "category": "BENIGN_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 261,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "ARC-BEN-005",
+      "category": "BENIGN_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 252,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "ARCHIVE_PATH_TRAVERSAL"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-001",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_PATH_TRAVERSAL"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 261,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "ARCHIVE_ABSOLUTE_PATH"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-002",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_ABSOLUTE_PATH"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 265,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "ARCHIVE_SYMLINK"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-003",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_SYMLINK"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 271,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-004",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 265,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER",
+        "ARCHIVE_MEMBER_DOUBLE_EXTENSION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-005",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER",
+        "ARCHIVE_MEMBER_DOUBLE_EXTENSION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 265,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER",
+        "ARCHIVE_MEMBER_BIDI_OVERRIDE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-006",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_DANGEROUS_MEMBER",
+        "ARCHIVE_MEMBER_BIDI_OVERRIDE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 270,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "ARCHIVE_DUPLICATE_MEMBER"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-007",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_DUPLICATE_MEMBER"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 264,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_ENCRYPTED",
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-008",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_ENCRYPTED",
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 300,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_NESTING_LIMIT",
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-009",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_NESTING_LIMIT",
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 288,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_PARTIAL_ANALYSIS",
+        "ARCHIVE_RESOURCE_LIMIT"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-010",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "RESOURCE_LIMIT_FAILURE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_PARTIAL_ANALYSIS",
+        "ARCHIVE_RESOURCE_LIMIT"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 452,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_MALFORMED",
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-011",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "PARSER_FAILURE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_MALFORMED"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 259,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "ARC-RISK-012",
+      "category": "RISKY_ARCHIVE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "ARCHIVE_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 268,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE",
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "FILE_DOUBLE_EXTENSION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "FID-001",
+      "category": "FILE_IDENTITY",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "FILE_DOUBLE_EXTENSION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 184,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE",
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "FILE_BIDI_OVERRIDE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "FID-002",
+      "category": "FILE_IDENTITY",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "FILE_BIDI_OVERRIDE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 180,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "FILE_CLIENT_MIME_MISMATCH",
+        "FILE_TYPE_MISMATCH"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "FID-003",
+      "category": "FILE_IDENTITY",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "FILE_TYPE_MISMATCH"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 119,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "FILE_CLIENT_MIME_MISMATCH",
+        "FILE_EXECUTABLE_MASQUERADE",
+        "FILE_TYPE_MISMATCH"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "FID-004",
+      "category": "FILE_IDENTITY",
+      "cdr_outcome": null,
+      "completeness_class": "OTHER_FAIL_CLOSED",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "FILE_CLIENT_MIME_MISMATCH",
+        "FILE_EXECUTABLE_MASQUERADE",
+        "FILE_TYPE_MISMATCH"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 115,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "FID-005",
+      "category": "FILE_IDENTITY",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 172,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-001",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 275,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-002",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 255,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-003",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 253,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-004",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 244,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-005",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 260,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "OFF-BEN-006",
+      "category": "BENIGN_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 254,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_MACRO"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-001",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_MACRO"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 294,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_MACRO"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-002",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_MACRO"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 301,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_EXECUTION_INDICATOR",
+        "OFFICE_VBA_MACRO"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-003",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_EXECUTION_INDICATOR",
+        "OFFICE_VBA_MACRO"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 291,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_EXECUTION_INDICATOR",
+        "OFFICE_VBA_MACRO"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-004",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_EXECUTION_INDICATOR",
+        "OFFICE_VBA_MACRO"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 296,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [
+        "OFFICE_EXTERNAL_RELATIONSHIP"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-005",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_EXTERNAL_RELATIONSHIP"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 250,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_EXTERNAL_RELATIONSHIP",
+        "OFFICE_EXTERNAL_TEMPLATE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-006",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_EXTERNAL_RELATIONSHIP",
+        "OFFICE_EXTERNAL_TEMPLATE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 262,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_ACTIVEX",
+        "OFFICE_EMBEDDED_OBJECT"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-007",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_ACTIVEX",
+        "OFFICE_EMBEDDED_OBJECT"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 252,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MACRO_ENABLED",
+        "OFFICE_PARTIAL_ANALYSIS",
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_MACRO"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-008",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_VBA_AUTOEXEC",
+        "OFFICE_VBA_MACRO"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 281,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_ENCRYPTED",
+        "OFFICE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-009",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_ENCRYPTED",
+        "OFFICE_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 241,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "OFFICE_MALFORMED",
+        "OFFICE_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "OFF-RISK-010",
+      "category": "RISKY_OFFICE",
+      "cdr_outcome": null,
+      "completeness_class": "PARSER_FAILURE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "OFFICE_MALFORMED",
+        "OFFICE_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 260,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-001",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 186,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-002",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 190,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-003",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 180,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "PDF-BEN-004",
+      "category": "BENIGN_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 188,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [
+        "PDF_OPEN_ACTION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-001",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_OPEN_ACTION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 196,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [
+        "PDF_ADDITIONAL_ACTION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-002",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_ADDITIONAL_ACTION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 180,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_JAVASCRIPT",
+        "PDF_OPEN_ACTION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-003",
+      "category": "RISKY_PDF",
+      "cdr_outcome": {
+        "cdr_eligible": true,
+        "derived_decision": "ALLOW",
+        "derived_release_eligible": true,
+        "derived_scan_id": "cb7e556a1a5941402bc5ab55de320633",
+        "source_decision": "QUARANTINE",
+        "source_decision_unchanged": true
+      },
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_JAVASCRIPT",
+        "PDF_OPEN_ACTION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 184,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "PDF_JAVASCRIPT"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-004",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_JAVASCRIPT"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 181,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_LAUNCH_ACTION",
+        "PDF_OPEN_ACTION"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-005",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_LAUNCH_ACTION",
+        "PDF_OPEN_ACTION"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 197,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "PDF_EMBEDDED_FILE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-006",
+      "category": "RISKY_PDF",
+      "cdr_outcome": {
+        "cdr_eligible": true,
+        "derived_decision": "ALLOW",
+        "derived_release_eligible": true,
+        "derived_scan_id": "2a80b4f6287f00d5779e0088c88eabb4",
+        "source_decision": "REVIEW",
+        "source_decision_unchanged": true
+      },
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_EMBEDDED_FILE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 178,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "REVIEW"
+      ],
+      "actual_decision": "REVIEW",
+      "actual_findings": [
+        "PDF_ACROFORM",
+        "PDF_XFA"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-007",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_ACROFORM",
+        "PDF_XFA"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 181,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [
+        "PDF_EXTERNAL_URI"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-008",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_EXTERNAL_URI"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 187,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [
+        "PDF_ACROFORM"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-009",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_ACROFORM"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 173,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "YARA_TEST_SIGNATURE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-010",
+      "category": "RISKY_PDF",
+      "cdr_outcome": {
+        "cdr_eligible": false,
+        "derived_decision": null,
+        "derived_release_eligible": null,
+        "derived_scan_id": null,
+        "source_decision": "BLOCK",
+        "source_decision_unchanged": true
+      },
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "YARA_TEST_SIGNATURE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 188,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_ENCRYPTED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-011",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "INTENTIONAL_PARTIAL",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_ENCRYPTED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 188,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_MALFORMED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "analysis_complete": false,
+      "case_class": "RISKY",
+      "case_id": "PDF-RISK-012",
+      "category": "RISKY_PDF",
+      "cdr_outcome": null,
+      "completeness_class": "PARSER_FAILURE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_MALFORMED",
+        "PDF_PARTIAL_ANALYSIS"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 189,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "FAILED"
+    },
+    {
+      "acceptable_decisions": [
+        "BLOCK"
+      ],
+      "actual_decision": "BLOCK",
+      "actual_findings": [
+        "YARA_TEST_SIGNATURE"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "YAR-001",
+      "category": "YARA",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "YARA_TEST_SIGNATURE"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 122,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "PDF_JAVASCRIPT",
+        "PDF_OPEN_ACTION",
+        "YARA_HEURISTIC_MATCH"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "YAR-002",
+      "category": "YARA",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "PDF_JAVASCRIPT",
+        "PDF_OPEN_ACTION",
+        "YARA_HEURISTIC_MATCH"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 220,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "YAR-003",
+      "category": "YARA",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 122,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "QUARANTINE"
+      ],
+      "actual_decision": "QUARANTINE",
+      "actual_findings": [
+        "YARA_HEURISTIC_MATCH"
+      ],
+      "analysis_complete": true,
+      "case_class": "RISKY",
+      "case_id": "YAR-004",
+      "category": "YARA",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [
+        "YARA_HEURISTIC_MATCH"
+      ],
+      "findings_recall_pass": true,
+      "latency_ms": 116,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": false,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    },
+    {
+      "acceptable_decisions": [
+        "ALLOW"
+      ],
+      "actual_decision": "ALLOW",
+      "actual_findings": [],
+      "analysis_complete": true,
+      "case_class": "BENIGN",
+      "case_id": "YAR-005",
+      "category": "YARA",
+      "cdr_outcome": null,
+      "completeness_class": "COMPLETE",
+      "decision_compliant": true,
+      "error": null,
+      "expected_findings": [],
+      "findings_recall_pass": true,
+      "latency_ms": 132,
+      "missing_expected_findings": [],
+      "notes": "",
+      "release_eligible": true,
+      "unexpected_findings": [],
+      "worker_status": "SUCCESS"
+    }
+  ]
+}
