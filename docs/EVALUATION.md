@@ -1,6 +1,6 @@
 # DocGuard Phase 11 Evaluation
 
-This document has two parts, kept clearly separate:
+This document has three parts, kept clearly separate:
 
 - **Part A — §1–29, Historical Phase 11B.** The original official controlled
   benchmark, executed once under policy `1.0.1`. Frozen, immutable evidence —
@@ -8,11 +8,15 @@ This document has two parts, kept clearly separate:
   of what was true at that commit and policy version, not as a description
   of the current release.
 - **Part B — §30–43, Phase 11C current-release revalidation.** A *new*,
-  separate run of the identical frozen 59-case corpus against current HEAD
-  and policy `1.0.2`, added later to check whether the current release still
-  behaves the way Phase 11B measured. It does not replace, supersede, or
-  average with Part A — it is a compatibility check, reported alongside the
-  original, not instead of it.
+  separate run of the identical frozen 59-case corpus against v1.1.0 (current
+  HEAD at the time) and policy `1.0.2`, added to check whether that release
+  still behaves the way Phase 11B measured. Does not replace or supersede
+  Part A — a compatibility check, reported alongside the original.
+- **Part C — §44–52, Phase 11D hotfix revalidation.** A *new*, separate run
+  of the identical frozen 59-case corpus against the v1.1.1 session-lifecycle
+  hotfix candidate, still under policy `1.0.2`. Performed as release-integrity
+  discipline after an auth-only fix — not because analysis behavior was
+  expected to change. Does not replace or supersede Parts A or B.
 
 ## 1. Objective
 
@@ -611,3 +615,134 @@ python -m scripts.run_evaluation --execute --case-id <...59 ids...> \
 Compare the resulting `metrics.json`/`results.json` against section 34 and against
 `evaluation/results/phase11b/` for the historical comparison — never overwrite either
 directory when reproducing this.
+
+---
+
+# Part C — Phase 11D: v1.1.1 hotfix revalidation
+
+## 44. Objective
+
+Phase 11D was performed as a release-integrity revalidation after the v1.1.1
+session-lifecycle hotfix. The hotfix does not alter document analysis or policy
+behavior; the frozen controlled corpus was rerun to verify that those invariants
+remained unchanged. This was a deliberate choice — evidence discipline, not a
+response to any expectation that analysis behavior would differ. The hotfix
+(commit `0b06cd6d2beb95eb35cf23a6ddc6712962544fae`) is scoped entirely to
+`app/main.py`'s browser session middleware (see `docs/RELEASE_NOTES.md` "1.1.1");
+it touches no analyzer, policy, YARA, or CDR code path.
+
+## 45. Frozen corpus identity re-verification
+
+Recomputed immediately before the Phase 11D run and compared against the section 6
+pre-registration values — identical to the Phase 11C re-verification (section 31):
+
+| File | SHA-256 | Matches section 6 |
+| --- | --- | --- |
+| `evaluation/corpus_manifest.json` | `c7959cc3f1e28a2663ae06c6d1585624f1c542dea8493c6247aea70fe3e8afd0` | Yes |
+| `evaluation/corpus.py` | `656bbec78e0fecaced9129054ba2f2f7a76123c66cc5cafa5609a75986ccad83` | Yes |
+| `evaluation/models.py` | `e8824dac3650d63715b0b91eaa5a9fb44c1d3ab65fed8ec2ff23ea906c9c9191` | Yes |
+| `evaluation/manifest.py` | `62f257276d1f403de9e0878d62833d9af642887be9ccce13912ac16c01affaaa` | Yes |
+
+`--validate-manifest` passed (59 cases, zero duplicate case IDs) before execution.
+
+## 46. Evaluated release identity
+
+| Identity | Value |
+| --- | --- |
+| Git commit (v1.1.1 candidate) | `b8ab859d684f9142ec56e8a139737f8a86ba2dc8` |
+| Application version | `1.1.1` (`pyproject.toml`; bumped from `1.1.0`) |
+| Hotfix commit under evaluation | `0b06cd6d2beb95eb35cf23a6ddc6712962544fae` |
+| Policy version / fingerprint | `1.0.2` / `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` (unchanged from Phase 11C) |
+| YARA rule pack version / SHA-256 | `2026.08.1` / `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` (unchanged) |
+| Sanitizer version / fingerprint | `1.0.0` / `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` (unchanged) |
+| Isolation backend | `bubblewrap` (confirmed real: `bubblewrap 0.11.1`) |
+
+## 47. Execution
+
+Identical method to Phase 11C (section 33): all 59 case IDs explicit, real
+Bubblewrap backend, output to `evaluation/results/phase11d/`, resilience sequence
+run separately via `evaluation.runner.execute_mode()` with the same
+`write_results_json()` helper.
+
+## 48. Results summary — Phase 11C vs. Phase 11D
+
+| Metric | Phase 11C (v1.1.0) | Phase 11D (v1.1.1) |
+| --- | --- | --- |
+| Cases completed | 59/59 | 59/59 |
+| Decision compliance | 59/59 (100%) | 59/59 (100%) |
+| Risky-case detection recall | 41/41 (100%) | 41/41 (100%) |
+| Finding-level recall | 72/72 (100%) | 72/72 (100%) |
+| Benign ALLOW rate | 18/18 (100%) | 18/18 (100%) |
+| Benign escalation rate | 0/18 (0%) | 0/18 (0%) |
+| Fail-secure rate | 9/9 (100%) | 9/9 (100%) |
+| CDR recovery rate | 2/2 (100%) | 2/2 (100%) |
+| Completeness — COMPLETE | 44 | 44 |
+| Completeness — INTENTIONAL_PARTIAL | 10 | 10 |
+| Completeness — PARSER_FAILURE | 3 | 3 |
+| Completeness — RESOURCE_LIMIT_FAILURE | 1 | 1 |
+| Completeness — OTHER_FAIL_CLOSED | 1 | 1 |
+
+Every decision-affecting metric reproduced **exactly** — zero missing expected
+findings, zero unexpected findings across all 59 cases (verified directly from
+`results.json`). This is the expected result for an auth-only hotfix and is
+reported as confirmation, not as evidence the fix "improved detection" — it did
+not touch detection at all.
+
+## 49. Latency
+
+| Statistic | Phase 11C (v1.1.0) | Phase 11D (v1.1.1) |
+| --- | --- | --- |
+| count | 59 | 59 |
+| mean | 228.2 ms | 296.0 ms |
+| median | 252.0 ms | 316.0 ms |
+| min | 115 ms | 150 ms |
+| max | 452 ms | 621 ms |
+| p95 | 300 ms | 414 ms |
+
+Slower on this run than Phase 11C, faster than Phase 11B — consistent with ordinary
+shared-development-host variance across separate sessions, not a regression. Same
+caveat as sections 20/35: single-host, single-run descriptive statistics, not a
+performance claim.
+
+## 50. CDR outcomes
+
+| Case | Source decision | CDR eligible | Derived decision | Derived release-eligible | Source decision unchanged |
+| --- | --- | --- | --- | --- | --- |
+| PDF-RISK-003 | QUARANTINE | true | ALLOW | true | **true** |
+| PDF-RISK-006 | REVIEW | true | ALLOW | true | **true** |
+| PDF-RISK-010 (BLOCK) | BLOCK | **false** | — | — | **true** |
+
+Identical outcome shape to Phase 11B and Phase 11C.
+
+## 51. Resilience sequence
+
+| Case | Decision | Worker status |
+| --- | --- | --- |
+| PDF-BEN-001 | ALLOW | SUCCESS |
+| PDF-RISK-012 | QUARANTINE | FAILED (fail-closed, as pre-registered) |
+| PDF-BEN-002 | ALLOW | SUCCESS |
+
+Identical result shape to Phase 11B and Phase 11C.
+
+## 52. Historical artifact integrity and result hashes
+
+`evaluation/results/phase11b/` and `evaluation/results/phase11c/` were verified
+byte-for-byte unchanged against the committed `HEAD` both before and after the
+Phase 11D run (`git diff --quiet HEAD -- <path>` reported no difference each time).
+
+New retained artifacts (`evaluation/results/phase11d/`):
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `metrics.json` | `c03a339b9ca143415635ff7c9c459bdbd40e0b9f900f1a83e6fe9b74bc701c7b` |
+| `results.json` | `aa47b1888434a5629d7501946a9e9e5a77f98eab349e373efbddfcca49eeaeb4` |
+| `results.csv` | `31e04898b688aa379cd33e80b6ee3386e6f8feb57d32e08efeaaffc1c37ea3b7` |
+| `report.md` | `4a9e56e222cfdb29435ce2d1ead5d4c32178156cff85596faf2a5aa51ac2c56b` |
+| `resilience_sequence.json` | `c18f680295a06315d935ab86764612aef69205ae55f94e72dd625eeaba5d0359` |
+
+No unexpected results occurred. No regression, missing finding, unexpected finding,
+decision-compliance failure, or CDR-invariant violation was observed. Everything in
+Part A section 4/27 and Part B section 41 about what these results do NOT prove
+applies identically here — this remains a controlled, self-constructed synthetic
+corpus, not an independent adversarial benchmark, and `ALLOW` does not establish
+that a document is benign.

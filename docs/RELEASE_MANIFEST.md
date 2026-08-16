@@ -1,8 +1,72 @@
 # DocGuard Release Manifest
 
-This file is cumulative release history. The `v1.0.0` manifest below is preserved
-exactly as originally recorded — read as a record of that release, not the current
-one. Current release: **v1.1.0** (this section).
+This file is cumulative release history. Earlier sections are preserved exactly as
+originally recorded — read each as a record of that release, not the current one.
+Current release: **v1.1.1** (this section). `v1.1.0` remains historical and
+unchanged — it did **not** contain the session-lifecycle hotfix described below.
+
+---
+
+## v1.1.1 release manifest
+
+### Release identity
+
+| Identity | Value |
+| --- | --- |
+| Application release version | `1.1.1` (`pyproject.toml`, FastAPI app metadata) — bumped from `1.1.0` |
+| Release/evidence commit | this commit (`git log -1` / `git show v1.1.1 --no-patch`) |
+| Hotfix commit | `0b06cd6d2beb95eb35cf23a6ddc6712962544fae` — "fix: preserve authenticated sessions across static asset requests" |
+| Version-preparation commit | `b8ab859d684f9142ec56e8a139737f8a86ba2dc8` — "chore: prepare DocGuard v1.1.1 hotfix release" |
+| Phase 11D evaluated application candidate | `b8ab859d684f9142ec56e8a139737f8a86ba2dc8` (same commit as version-preparation — no further runtime changes between candidate and evaluation) |
+| Alembic migration head | unchanged from `v1.1.0` — no new migration in this release |
+| Python version | `3.14.4` |
+
+### What this release is
+
+A patch release containing exactly one change from `v1.1.0`: the session-lifecycle
+hotfix (`0b06cd6d`). No analyzer, policy, YARA, or CDR code changed. See
+`docs/RELEASE_NOTES.md` "1.1.1" for the defect description and correction, and
+`docs/EVALUATION.md` Part C (Phase 11D) for the frozen-corpus revalidation this
+manifest summarizes below.
+
+### Detection/integrity identities (unchanged from v1.1.0)
+
+| Identity | Version | Fingerprint |
+| --- | --- | --- |
+| Policy registry | `1.0.2` | `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` |
+| YARA rule pack | `2026.08.1` | `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` |
+| PDF CDR sanitizer | `1.0.0` | `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` |
+
+### Test result (pre-tag quality gate)
+
+Full suite: **520 passed**. `ruff format --check` clean, `ruff check` clean,
+`mypy --strict app worker docguard_contract evaluation scripts` clean. Real
+Bubblewrap isolation suite: **10 passed, 0 skipped**.
+
+### Controlled validation basis — Phase 11D
+
+| Identity | Value |
+| --- | --- |
+| Corpus version | `11A.1` |
+| Corpus case count | 59 |
+| Frozen corpus-definition hashes | unchanged — re-verified byte-for-byte before Phase 11D (`docs/EVALUATION.md` §45) |
+| Historical evaluation (unchanged) | `evaluation/results/phase11b/` — policy `1.0.1`, commit `b94d373` |
+| Prior current-release revalidation (unchanged) | `evaluation/results/phase11c/` — policy `1.0.2`, commit `f18961c` (v1.1.0) |
+| Hotfix revalidation (new) | `evaluation/results/phase11d/` — policy `1.0.2`, commit `b8ab859d684f9142ec56e8a139737f8a86ba2dc8` (v1.1.1 candidate) |
+
+Phase 11D reproduced every Phase 11C metric exactly: decision compliance 59/59,
+risky-case recall 41/41, finding recall 72/72, benign ALLOW 18/18, benign
+escalation 0/18, fail-secure 9/9, CDR recovery 2/2, identical completeness
+distribution (44/10/3/1/1). This was expected — the hotfix is auth-only and
+touches no analysis code path — and is reported as confirmation, not as an
+improvement claim. Full detail: `docs/EVALUATION.md` Part C.
+
+### What did not change in v1.1.1
+
+Everything listed under `v1.1.0`'s "What did not change" below, plus: the
+session-lifecycle fix touches only `app/main.py`'s browser session middleware —
+no change to CSRF, Origin enforcement, cookie flags, session expiry semantics,
+detection, policy, or CDR.
 
 ---
 
