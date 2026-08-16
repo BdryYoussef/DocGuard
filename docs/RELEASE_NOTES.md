@@ -1,8 +1,56 @@
 # DocGuard Release Notes
 
-This file is cumulative release history. The `1.0.0` release notes below are preserved
-exactly as originally written — read as a record of that release, not the current one.
-Current release: **1.1.0** (this section).
+This file is cumulative release history. Earlier sections are preserved exactly as
+originally written — read each as a record of that release, not the current one.
+Current release: **1.1.1** (this section).
+
+---
+
+# DocGuard 1.1.1 Release Notes
+
+Patch release: session-lifecycle / authentication reliability hotfix. Policy stays
+`1.0.2`, unchanged by this release.
+
+## Release identity
+
+- Application release version: **1.1.1** (`pyproject.toml`, FastAPI app metadata) —
+  bumped from `1.1.0`.
+- Policy version: **1.0.2**, fingerprint
+  `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` — unchanged.
+- Hotfix commit: `0b06cd6d2beb95eb35cf23a6ddc6712962544fae`.
+
+## The defect
+
+An authenticated request for a static asset (`/static/app.css`, `/static/app.js`, the
+wordmark, the font) could clear an otherwise valid session cookie. The session
+middleware intentionally skips authentication for `/static/*` requests — static assets
+don't need it — but the invalid-session cleanup path that runs afterward read that
+intentional skip (`principal is None`) as a failed authentication attempt, and deleted
+the session cookie in response. A real browser normally serves cached static assets
+from disk after the first page load, which is why this went unnoticed in ordinary use;
+a fresh session (first login, a cleared cache, or an automated browser) hit it almost
+immediately.
+
+## The correction
+
+Invalid-session cookie cleanup now occurs only when authentication was actually
+attempted for that request. Static asset requests still never perform session
+database/authentication work in either direction — this is a reliability fix to
+cleanup semantics, not a change to what gets authenticated.
+
+## What did not change
+
+Static assets remain unauthenticated by design. CSRF, Origin enforcement, session
+cookie flags, and session idle/absolute expiry semantics are all unchanged. Policy,
+detection behavior, and CDR semantics are unchanged — see the Phase 11D revalidation
+in `docs/EVALUATION.md`.
+
+## Classification
+
+This is framed as a **session-lifecycle / authentication-reliability hotfix**, not a
+security vulnerability disclosure: no route ever became reachable without a valid
+session, no capability was bypassed, and no document/policy data was exposed — the
+defect only caused a valid, already-authenticated session to be discarded prematurely.
 
 ---
 

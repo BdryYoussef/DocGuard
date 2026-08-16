@@ -2,7 +2,7 @@
 
 **An isolated and explainable security gateway for untrusted business documents.**
 
-Release `1.1.0`. See `docs/RELEASE_NOTES.md` for the full release summary and
+Release `1.1.1`. See `docs/RELEASE_NOTES.md` for the full release summary and
 `docs/DEFENSE_GUIDE.md` for a jury-oriented explanation of the project.
 
 ## Problem
