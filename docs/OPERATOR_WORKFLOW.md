@@ -81,6 +81,12 @@ a collapsed disclosure. The **Print / Save as PDF** button uses the
 browser's native print dialog; DocGuard does not generate PDFs server-side
 and the report is never triggered automatically.
 
+For a clean evidence PDF in Firefox, disable the browser's own **"Print
+headers and footers"** option in the print dialog before saving — that
+option is a Firefox setting outside DocGuard's control, and it prints the
+page title, URL, page number, and date on every page in addition to the
+report's own content.
+
 Like the scan detail page, the report never exposes raw/source document
 bytes, a quarantine download link, or a BLOCK override/release affordance.
 It is an authenticated presentation of already-persisted evidence, not a

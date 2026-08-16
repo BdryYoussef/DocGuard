@@ -130,7 +130,6 @@
   <section class="report-section" aria-labelledby="report-provenance">
     <h2 id="report-provenance" class="text-section-title">Technical provenance</h2>
     <dl class="metadata report-grid">
-      <dt>Document analyzed at</dt><dd><time datetime="{{ (scan.analysis_completed_at or scan.created_at).isoformat() }}">{{ (scan.analysis_completed_at or scan.created_at).strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
       <dt>Report generated at</dt><dd><time datetime="{{ report_generated_at.isoformat() }}">{{ report_generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></dd>
       <dt>Report requested by</dt><dd>{{ principal.username }}</dd>
     </dl>

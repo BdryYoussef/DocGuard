@@ -1348,7 +1348,12 @@ details.disclosure-editorial > .disclosure-body {
   .report-main { width: 100%; margin: var(--space-4) 0 0; }
 
   a { color: #000; text-decoration: underline; }
-  .report-section { border-bottom-color: #ccc; }
+  /* Screen section spacing (margin-bottom: space-7 + padding-bottom: space-6 =
+     56px per section) is generous by design for on-screen reading, but summed
+     across every report section it inflates total document height enough to
+     spill a small amount of content onto an otherwise-empty trailing page.
+     Tightened here, not stripped — still a clearly visible section gap. */
+  .report-section { margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom-color: #ccc; }
   .decision-panel,
   .lineage-step,
   .badge,
@@ -1363,7 +1368,15 @@ details.disclosure-editorial > .disclosure-body {
   .report-avoid-break,
   .finding-row,
   .decision-panel,
-  .lineage { break-inside: avoid; }
+  .lineage,
+  .metadata { break-inside: avoid; }
+
+  /* Same reasoning as .report-section above, applied to the two other repeated
+     spacing sources in the document: one .decision-panel and one .finding-row
+     per finding. */
+  .decision-panel { padding: var(--space-4); }
+  .finding-row { padding: var(--space-3) 0; }
+  .report-finding-metadata { margin-top: var(--space-1); padding-top: var(--space-1); }
 
   * { animation: none !important; transition: none !important; }
 

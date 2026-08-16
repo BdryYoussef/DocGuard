@@ -495,6 +495,46 @@ def test_report_essential_evidence_is_not_gated_behind_a_details_element() -> No
     assert "<details" not in template
 
 
+def test_metadata_grid_blocks_never_split_mid_block_when_printed() -> None:
+    """Regression guard for a real bug: a `<dl class="metadata">` (the
+    Technical provenance / finding-detail grid) had no `break-inside: avoid`
+    under `@media print`, so the browser could split it between rows —
+    orphaning the last row onto its own near-empty trailing page."""
+    css = Path("app/web/static/app.css").read_text(encoding="utf-8")
+    print_block = css.split("@media print", 1)[1]
+    print_rules = print_block.split("\n@media", 1)[0]
+    break_inside_rule = next(
+        rule
+        for rule in print_rules.split("}")
+        if "break-inside: avoid" in rule and ".metadata" in rule.rsplit("{", 1)[0]
+    )
+    assert ".metadata" in break_inside_rule.rsplit("{", 1)[0]
+
+
+def test_report_does_not_duplicate_the_document_analyzed_at_timestamp() -> None:
+    """Regression guard: 'Document analyzed at' was rendered twice (once in
+    Document, once again in Technical provenance) — genuine duplicate content
+    that inflated the printed page height for no reason. It must appear
+    exactly once; the report-generation timestamp stays separately labeled."""
+    template = Path("app/web/templates/scan_report.html").read_text(encoding="utf-8")
+    assert template.count("Document analyzed at") == 1
+    assert "Report generated at" in template
+
+
+def test_print_section_spacing_is_tightened_below_the_screen_default() -> None:
+    """Regression guard: print inherited the full screen section spacing
+    (margin-bottom + padding-bottom summing to 56px per section), which
+    across every report section was enough excess height to spill a small
+    tail of content onto an otherwise-empty trailing page. Print must use a
+    visibly smaller, but still nonzero, gap."""
+    css = Path("app/web/static/app.css").read_text(encoding="utf-8")
+    print_block = css.split("@media print", 1)[1]
+    print_rules = print_block.split("\n@media", 1)[0]
+    section_rule = next(rule for rule in print_rules.split("}") if ".report-section {" in rule)
+    assert "margin-bottom: var(--space-3)" in section_rule
+    assert "padding-bottom: var(--space-2)" in section_rule
+
+
 def test_report_uses_only_same_origin_assets_and_no_inline_script_or_style() -> None:
     template = Path("app/web/templates/scan_report.html").read_text(encoding="utf-8")
     assert "http://" not in template
