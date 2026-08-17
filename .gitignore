@@ -36,3 +36,4 @@ dist/
 !.claude/rules/
 .agents/
 skills-lock.json
+.report-venv/
