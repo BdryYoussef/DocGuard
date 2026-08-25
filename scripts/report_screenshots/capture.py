@@ -280,8 +280,32 @@ def capture_mobile_dashboard(browser: Browser, base_url: str, username: str, pas
     page.click('button[type="submit"]')
     page.wait_for_url("**/app")
     page.wait_for_selector(".panel")
+    _assert_no_horizontal_overflow(page, label="mobile dashboard")
     page.screenshot(path=str(OUTPUT_DIR / "14_mobile_dashboard.png"))
+    nav_more = page.query_selector(".nav-more summary")
+    if nav_more is not None:
+        nav_more.click()
+        _assert_no_horizontal_overflow(page, label="mobile dashboard with More menu open")
     context.close()
+
+
+def _assert_no_horizontal_overflow(page: Page, *, label: str) -> None:
+    """Fail closed if the page requires horizontal scrolling at its current
+    viewport — a `document.documentElement.scrollWidth > clientWidth` grid/flex
+    "blowout" is silent in a screenshot but breaks real mobile use. Kept as one
+    small, focused assertion in this existing Playwright tooling rather than
+    adding a browser/DOM harness to the pytest suite, which has none."""
+    metrics = page.evaluate(
+        "({scrollWidth: document.documentElement.scrollWidth, "
+        "clientWidth: document.documentElement.clientWidth})"
+    )
+    scroll_width = int(metrics["scrollWidth"])
+    client_width = int(metrics["clientWidth"])
+    if scroll_width > client_width:
+        raise SystemExit(
+            f"horizontal overflow regression on {label}: "
+            f"scrollWidth={scroll_width} > clientWidth={client_width}"
+        )
 
 
 def main() -> int:
