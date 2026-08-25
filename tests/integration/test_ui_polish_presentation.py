@@ -36,6 +36,7 @@ from tests.fixtures.archive_factory import archive_bytes
 from tests.fixtures.office_factory import write_encrypted_office_ole
 from tests.fixtures.pdf_factory import (
     write_acroform_pdf,
+    write_benign_pdf,
     write_javascript_behavior_pdf,
     write_javascript_pdf,
     write_malformed_pdf_with_indicator_names,
@@ -153,12 +154,38 @@ async def test_non_cdr_eligible_pdf_source_does_not_point_to_sanitization_below(
         assert eligibility.eligible is False
         response = await client.get(f"/app/scans/{payload['scan_id']}")
 
+        # A release-eligible (ALLOW) source is a different, non-contradictory case:
+        # it must never be told "the original document must remain unavailable" —
+        # that wording is for non-release-eligible sources only. Same conditional
+        # block, sibling branch; kept in this test rather than a new test item.
+        allow_payload = await _upload(
+            client,
+            "invoice.pdf",
+            write_benign_pdf(tmp_path / "invoice.pdf").read_bytes(),
+            content_type="application/pdf",
+        )
+        allow_response = await client.get(f"/app/scans/{allow_payload['scan_id']}")
+
     assert response.status_code == 200
     text = response.text
     assert "Generate sanitized PDF" not in text
     assert "check whether a sanitized derivative" not in text.lower()
     assert "sanitized derivative may be available below" not in text.lower()
     assert "The original document must remain unavailable." in text
+
+    assert allow_response.status_code == 200
+    allow_text = allow_response.text
+    assert allow_payload["decision"] == "ALLOW"
+    assert allow_payload["release_eligible"] is True
+    assert "The original document must remain unavailable" not in allow_text
+    assert "This scan is release-eligible under the current policy." in allow_text
+    assert "No sanitization action is available." in allow_text
+    assert "ALLOW is not proof the document is benign." in allow_text
+    assert "Generate sanitized PDF" not in allow_text
+    assert "Download approved sanitized PDF" not in allow_text
+    assert "safe" not in allow_text.casefold()
+    assert "clean" not in allow_text.casefold()
+    assert "malware-free" not in allow_text.casefold()
 
 
 @pytest.mark.asyncio

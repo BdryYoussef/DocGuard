@@ -88,6 +88,8 @@
   <p class="text-label">Sanitization (CDR)</p>
   {% if result.decision == 'BLOCK' %}
   <p class="muted">Policy prohibits release. A BLOCK decision has no sanitization path — reconstruction cannot bypass a hard policy violation.</p>
+  {% elif result.release_eligible %}
+  <p class="muted">This scan is release-eligible under the current policy. No sanitization action is available.</p>
   {% else %}
   <p class="muted">The original document must remain unavailable.</p>
   {% endif %}
