@@ -2,8 +2,98 @@
 
 This file is cumulative release history. Earlier sections are preserved exactly as
 originally recorded — read each as a record of that release, not the current one.
-Current release: **v1.1.1** (this section). `v1.1.0` remains historical and
-unchanged — it did **not** contain the session-lifecycle hotfix described below.
+Current release: **v1.1.2** (this section). `v1.1.1` and `v1.1.0` remain
+historical and unchanged.
+
+---
+
+## v1.1.2 release manifest
+
+### Release identity
+
+| Identity | Value |
+| --- | --- |
+| Application release version | `1.1.2` (`pyproject.toml`, FastAPI app metadata) — bumped from `1.1.1` |
+| Release/evidence commit | this commit (`git log -1` / `git show v1.1.2 --no-patch`) |
+| Evaluated application candidate | `02e6ef48ad96232dffaef05ab6beb41eb18e2847` — "fix: prevent mobile dashboard horizontal overflow" (frozen; no application-runtime change between this candidate and the release/evidence commit above) |
+| Prior candidate commits (UI-polish sequence, on top of `v1.1.1`) | `d5f42fb4f6f44eb3b962c9d74723da8cc751b748` ("feat: polish DocGuard operator UI for v1.1.2"), `44eff36a42e180d520538897a0a150488ac22b82` ("fix: correct ALLOW sanitization guidance") |
+| Alembic migration head | unchanged from `v1.1.1` — no new migration in this release |
+| Python version | `3.14.4` |
+
+### What this release is
+
+A **presentation/usability patch** for the operator web UI: format-neutral
+Sanitization (CDR) wording (including a release-eligible/ALLOW correction),
+humanized finding metadata, a stronger decision-evidence hierarchy, compact
+audit-detail presentation, a confidence-neutral lexical-evidence note color,
+a zero-JS mobile navigation disclosure, and a mobile dashboard
+horizontal-overflow fix — plus narrow strict-mypy typing cleanup of tracked
+post-release tooling. No analyzer, policy, YARA, CDR, authentication,
+authorization, database, or API code changed. See `docs/RELEASE_NOTES.md`
+"1.1.2" for the full defect/correction narrative, and `docs/EVALUATION.md`
+Part D (Phase 11E) for the frozen-corpus revalidation this manifest
+summarizes below.
+
+### Detection/integrity identities (unchanged from v1.1.1)
+
+| Identity | Version | Fingerprint |
+| --- | --- | --- |
+| Policy registry | `1.0.2` | `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` |
+| YARA rule pack | `2026.08.1` | `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` |
+| PDF CDR sanitizer | `1.0.0` | `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` |
+
+### Test result (pre-tag quality gate)
+
+Full suite: **530 passed** (baseline `520` at `v1.1.1` + 10 new UI-polish
+presentation regression tests in `tests/integration/test_ui_polish_presentation.py`
+— one existing test in that file was later extended with an additional
+ALLOW/release-eligible case rather than adding an 11th test item). `ruff format
+--check` clean, `ruff check` clean, `mypy --strict app worker docguard_contract
+evaluation scripts` clean (0 issues, 105 source files). Real Bubblewrap
+isolation suite: **10 passed, 0 skipped**.
+
+### Controlled validation basis — Phase 11E
+
+| Identity | Value |
+| --- | --- |
+| Corpus version | `11A.1` |
+| Corpus case count | 59 |
+| Frozen corpus-definition hashes | unchanged — re-verified byte-for-byte before Phase 11E (`docs/EVALUATION.md` §54) |
+| Historical evaluation (unchanged) | `evaluation/results/phase11b/` — policy `1.0.1`, commit `b94d373` |
+| Prior current-release revalidation (unchanged) | `evaluation/results/phase11c/` — policy `1.0.2`, commit `f18961c` (v1.1.0) |
+| Hotfix revalidation (unchanged) | `evaluation/results/phase11d/` — policy `1.0.2`, commit `b8ab859` (v1.1.1) |
+| UI-polish revalidation (new) | `evaluation/results/phase11e/` — policy `1.0.2`, commit `02e6ef48ad96232dffaef05ab6beb41eb18e2847` (v1.1.2 candidate) |
+
+Phase 11E reproduced every Phase 11D metric exactly: decision compliance 59/59,
+risky-case recall 41/41, finding recall 72/72, benign ALLOW 18/18, benign
+escalation 0/18, fail-secure 9/9, CDR recovery 2/2, identical completeness
+distribution (44/10/3/1/1). This was expected — the change is
+presentation-only and touches no analysis code path — and is reported as
+confirmation, not as an improvement claim. Latency differed from Phase 11D
+(mean 227.4 ms vs. 296.0 ms) but was not measured under a controlled
+performance-isolation protocol on this shared development host, so the
+difference is treated as host/session variance, not a performance claim in
+either direction. Full detail: `docs/EVALUATION.md` Part D.
+
+Phase 11E artifact hashes (`evaluation/results/phase11e/`):
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `metrics.json` | `f700b63423435b20d4678f415b2f23ffbc19bf4438c0ab628e490052b6d0c130` |
+| `results.json` | `ca189e07de4d1159b9858141381adeeb14ea8ccdea023b1aee9cf543deaa4aef` |
+| `results.csv` | `dda403780e8b50826685e087cb27a77399ed0f9101b4ca42a6155918e2f1d1ae` |
+| `report.md` | `f9c31ba15747357311cb961954d8092b57f047ccdaa544a314695ac1c2f99d9b` |
+| `resilience_sequence.json` | `71296d9a2472ffc3b50fe11bd78a3eac4da07b98314244bf5611da732cacc671` |
+
+### What did not change in v1.1.2
+
+Everything listed under `v1.1.1`'s "What did not change", plus: detection,
+policy, CDR processing, authentication, authorization, the database schema,
+API contracts, audit persistence semantics, release eligibility, and risk
+scoring are all unchanged. The canonical report screenshots
+(`docs/screenshots/report/`) were regenerated against this release to reflect
+the UI changes; `docs/screenshots/SCREENSHOT_MANIFEST.md` records the
+capture identity and viewport/dimension details.
 
 ---
 

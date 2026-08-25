@@ -1,13 +1,14 @@
 # DocGuard — Manifeste des captures d'écran (rapport / soutenance)
 
-Captured from: **DocGuard v1.1.1**
-Release commit: `48b08fba2f1125c79c4f595fd18d5c8378c0523d`
-Policy: **1.0.2** (fingerprint `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b`)
-Controlled revalidation: Phase 11D, corpus 59 cas synthétiques, toutes les métriques de décision/détection/CDR reproduites.
+Captured from: **DocGuard v1.1.2**
+Evaluated application candidate: `02e6ef48ad96232dffaef05ab6beb41eb18e2847`
+Release/evidence commit: this commit (`git log -1` / `git show v1.1.2 --no-patch`)
+Policy: **1.0.2** (fingerprint `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b`) — unchanged from v1.1.1
+Controlled revalidation: Phase 11E, corpus `11A.1` (59 cas synthétiques, hachages frozen re-vérifiés), toutes les métriques de décision/détection/CDR reproduites à l'identique de la Phase 11D. v1.1.2 est un correctif de présentation/ergonomie de l'interface opérateur (formulation Sanitization/CDR neutre vis-à-vis du format, métadonnées techniques humanisées, hiérarchie des preuves de décision, présentation des détails d'audit, navigation mobile compacte, correction d'un débordement horizontal du tableau de bord mobile, correction d'une formulation contradictoire pour ALLOW) — aucun changement de détection, de politique ou de sécurité.
 
 Toutes les captures ont été produites via `scripts/report_screenshots/capture.py` (Playwright/Chromium) contre une instance DocGuard locale, réelle et non modifiée, avec authentification réelle (aucune injection de cookie) et des données **entièrement synthétiques et contrôlées** — aucune donnée réelle de client, de CIN, de RIB ou de facture n'a été utilisée. Voir `capture.py`/`seed_data.py` pour la méthode exacte.
 
-Viewport desktop : 1440×900 (facteur d'échelle 2, soit des captures à ~2880 px de large). Mobile (optionnel) : 375×812. `prefers-reduced-motion: reduce` actif pour des captures déterministes.
+Viewport desktop : 1440×900 (facteur d'échelle 2, soit des captures à ~2880 px de large). Mobile (optionnel) : 375×812 (facteur d'échelle 2), capture de viewport (750×1624 px) — `document.documentElement.scrollWidth` est maintenant strictement égal à `clientWidth` (375) à cette largeur ; `capture.py` échoue explicitement (`_assert_no_horizontal_overflow`) si un débordement horizontal réapparaît. `prefers-reduced-motion: reduce` actif pour des captures déterministes.
 
 ---
 

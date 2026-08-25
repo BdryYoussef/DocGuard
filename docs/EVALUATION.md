@@ -746,3 +746,195 @@ Part A section 4/27 and Part B section 41 about what these results do NOT prove
 applies identically here — this remains a controlled, self-constructed synthetic
 corpus, not an independent adversarial benchmark, and `ALLOW` does not establish
 that a document is benign.
+
+# Part D — Phase 11E (v1.1.2 UI-polish candidate revalidation)
+
+## 53. Objective
+
+Phase 11E is a **revalidation, not a new benchmark**. It reruns the identical,
+frozen, controlled, synthetic, self-constructed 59-case corpus (`11A.1`) used by
+Phase 11B/11C/11D against the DocGuard v1.1.2 UI-polish release-candidate commit,
+to confirm that the candidate change had zero effect on detection, policy, or CDR
+behavior.
+
+The v1.1.1 → v1.1.2 change is **presentation/usability-oriented only**: operator
+web-UI template/CSS/JS wording, finding-metadata humanization, decision-panel
+hierarchy, audit-detail presentation, an inert-sanitization quiet state, a
+confidence-neutral lexical-evidence note color, a zero-JS mobile navigation
+disclosure, narrow strict-mypy typing cleanup of post-release tooling, the
+canonical application-version bump (`1.1.1` → `1.1.2`), and two further,
+sequential manual-visual-review corrections folded into this same candidate
+before tagging:
+
+1. Corrected, format-neutral Sanitization (CDR) wording for release-eligible
+   (ALLOW) scans — the panel previously and incorrectly told an ALLOW scan "the
+   original document must remain unavailable", contradicting its own "Release
+   eligible: Yes" field.
+2. A mobile-responsive fix removing genuine horizontal overflow at 375 CSS px
+   on the dashboard ("Needs attention" queue rows and "Decision activity"
+   rows both blew out a CSS Grid track that lacked `minmax(0, 1fr)`), plus an
+   adjacent nav "More" disclosure-panel alignment fix found while re-testing
+   every breakpoint.
+
+Both corrections are presentation-only — Jinja conditional wording and CSS
+`grid-template-columns`/positioning changes — touching no analyzer, policy, or
+CDR code path. Two earlier evaluation attempts, against
+`d5f42fb4f6f44eb3b962c9d74723da8cc751b748` (pre ALLOW-wording-fix) and
+`44eff36a42e180d520538897a0a150488ac22b82` (pre responsive-overflow-fix), were
+each superseded before being recorded as official evidence. **This section
+reports only the run against the final corrected candidate**,
+`02e6ef48ad96232dffaef05ab6beb41eb18e2847`.
+
+Detection, policy, CDR processing, authentication, and audit persistence
+semantics were **intentionally left unchanged** throughout; this phase exists to
+verify that intention against the real pipeline rather than merely assert it.
+
+As with every prior phase, no independent adversarial benchmark is claimed here,
+and an `ALLOW` decision does not establish that any document is benign — it means
+no risky characteristic covered by the configured detection model was observed.
+Everything in Part A section 4/27 and Part B section 41 about what these results
+do NOT prove applies identically to Phase 11E.
+
+## 54. Frozen corpus identity re-verification
+
+Recomputed immediately before the Phase 11E run and compared against the section 6
+pre-registration values — identical to the Phase 11C/11D re-verifications (sections
+31, 45):
+
+| File | SHA-256 | Matches section 6 |
+| --- | --- | --- |
+| `evaluation/corpus_manifest.json` | `c7959cc3f1e28a2663ae06c6d1585624f1c542dea8493c6247aea70fe3e8afd0` | Yes |
+| `evaluation/corpus.py` | `656bbec78e0fecaced9129054ba2f2f7a76123c66cc5cafa5609a75986ccad83` | Yes |
+| `evaluation/models.py` | `e8824dac3650d63715b0b91eaa5a9fb44c1d3ab65fed8ec2ff23ea906c9c9191` | Yes |
+| `evaluation/manifest.py` | `62f257276d1f403de9e0878d62833d9af642887be9ccce13912ac16c01affaaa` | Yes |
+
+`--validate-manifest` passed (59 cases, zero duplicate case IDs) before execution.
+
+## 55. Evaluated release identity
+
+| Identity | Value |
+| --- | --- |
+| Git commit (v1.1.2 candidate, untagged) | `02e6ef48ad96232dffaef05ab6beb41eb18e2847` |
+| Superseded prior candidates (not recorded as evidence) | `d5f42fb4f6f44eb3b962c9d74723da8cc751b748`, `44eff36a42e180d520538897a0a150488ac22b82` |
+| Application version | `1.1.2` (`pyproject.toml`; bumped from `1.1.1`) |
+| Policy version / fingerprint | `1.0.2` / `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` (unchanged from Phase 11D) |
+| YARA rule pack version / SHA-256 | `2026.08.1` / `7b9bab1889c4db6ead3b49263e93c10b138d2b8496668791b7ca8363c5385fe7` (unchanged) |
+| Sanitizer version / fingerprint | `1.0.0` / `46ceaaa938031df4952fbbf9fa23c374ed516be648456fdd256bcd5fcfd73bf2` (unchanged) |
+| Isolation backend | `bubblewrap` (confirmed real: `bubblewrap 0.11.1`) |
+
+This commit is a release **candidate**: it has not been tagged `v1.1.2`, and the
+`v1.1.1` tag (`48b08fb`) was neither moved nor amended.
+
+## 56. Execution
+
+Identical method to Phase 11C/11D (sections 33, 47): all 59 case IDs explicit, real
+Bubblewrap backend, output to `evaluation/results/phase11e/`, resilience sequence
+run separately via `evaluation.runner.execute_mode(["PDF-BEN-001", "PDF-RISK-012",
+"PDF-BEN-002"])` with the same `write_results_json()` helper.
+
+```bash
+python -m scripts.run_evaluation --validate-manifest
+python -m scripts.run_evaluation --execute --case-id <all 59 case IDs> \
+    --isolation-backend bubblewrap --output-dir evaluation/results/phase11e
+```
+
+## 57. Results summary — Phase 11D vs. Phase 11E
+
+| Metric | Phase 11D (v1.1.1) | Phase 11E (v1.1.2 candidate) |
+| --- | --- | --- |
+| Cases completed | 59/59 | 59/59 |
+| Decision compliance | 59/59 (100%) | 59/59 (100%) |
+| Risky-case detection recall | 41/41 (100%) | 41/41 (100%) |
+| Finding-level recall | 72/72 (100%) | 72/72 (100%) |
+| Benign ALLOW rate | 18/18 (100%) | 18/18 (100%) |
+| Benign escalation rate | 0/18 (0%) | 0/18 (0%) |
+| Fail-secure rate | 9/9 (100%) | 9/9 (100%) |
+| CDR recovery rate | 2/2 (100%) | 2/2 (100%) |
+| Completeness — COMPLETE | 44 | 44 |
+| Completeness — INTENTIONAL_PARTIAL | 10 | 10 |
+| Completeness — PARSER_FAILURE | 3 | 3 |
+| Completeness — RESOURCE_LIMIT_FAILURE | 1 | 1 |
+| Completeness — OTHER_FAIL_CLOSED | 1 | 1 |
+
+Every decision-affecting metric reproduced **exactly** — zero missing expected
+findings, zero unexpected findings across all 59 cases (verified directly from
+`results.json`). This is the expected result for a presentation-only UI-polish
+candidate and is reported as confirmation, not as evidence the change "improved
+detection" — it did not touch detection at all.
+
+## 58. Latency
+
+| Statistic | Phase 11D (v1.1.1) | Phase 11E (v1.1.2 candidate) |
+| --- | --- | --- |
+| count | 59 | 59 |
+| mean | 296.0 ms | 227.4 ms |
+| median | 316.0 ms | 252.0 ms |
+| min | 150 ms | 109 ms |
+| max | 621 ms | 457 ms |
+| p95 | 414 ms | 315 ms |
+
+Phase 11E showed different latency from Phase 11D on the same development host.
+Because all functional outputs were reproduced exactly and latency was not
+evaluated under a controlled performance-isolation protocol, the difference is
+treated as host/session variance rather than evidence of a functional
+regression — or, in this direction, evidence of an improvement. The UI-polish
+change touches no request-handling, worker, or analysis code path, and latency
+variation alone is explicitly outside this phase's pass/fail criteria.
+
+## 59. CDR outcomes
+
+| Case | Source decision | CDR eligible | Derived decision | Derived release-eligible | Source decision unchanged |
+| --- | --- | --- | --- | --- | --- |
+| PDF-RISK-003 | QUARANTINE | true | ALLOW | true | **true** |
+| PDF-RISK-006 | REVIEW | true | ALLOW | true | **true** |
+| PDF-RISK-010 (BLOCK) | BLOCK | **false** | — | — | **true** |
+
+Identical outcome shape to Phase 11B, Phase 11C, and Phase 11D.
+
+## 60. Resilience sequence
+
+Reproduces the historical valid → malformed/fail-closed → valid sequence
+(`evaluation.runner.execute_mode(["PDF-BEN-001", "PDF-RISK-012", "PDF-BEN-002"])`,
+run in that literal order; `results.json`/`resilience_sequence.json` re-sort by
+`case_id` for deterministic diffing, which is why the table above and the stored
+JSON list PDF-BEN-002 before PDF-RISK-012):
+
+| Case | Decision | Worker status |
+| --- | --- | --- |
+| PDF-BEN-001 | ALLOW | SUCCESS |
+| PDF-RISK-012 | QUARANTINE | FAILED (fail-closed, as pre-registered) |
+| PDF-BEN-002 | ALLOW | SUCCESS |
+
+Identical result shape to Phase 11B, Phase 11C, and Phase 11D. The final valid
+scan (`PDF-BEN-002`) completed normally (`ALLOW`/`SUCCESS`) immediately after the
+fail-closed `PDF-RISK-012` scan in the same application/worker-pool instance,
+confirming no persistent contamination from the failed worker/input carried
+forward into the next request.
+
+## 61. Historical artifact integrity and result hashes
+
+`evaluation/results/phase11b/`, `evaluation/results/phase11c/`, and
+`evaluation/results/phase11d/` were verified byte-for-byte unchanged against the
+committed `HEAD` both before and after the Phase 11E run (`git diff --quiet HEAD
+-- <path>` reported no difference each time).
+
+New retained artifacts (`evaluation/results/phase11e/`), generated against the
+final corrected candidate `02e6ef48ad96232dffaef05ab6beb41eb18e2847`:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `metrics.json` | `f700b63423435b20d4678f415b2f23ffbc19bf4438c0ab628e490052b6d0c130` |
+| `results.json` | `ca189e07de4d1159b9858141381adeeb14ea8ccdea023b1aee9cf543deaa4aef` |
+| `results.csv` | `dda403780e8b50826685e087cb27a77399ed0f9101b4ca42a6155918e2f1d1ae` |
+| `report.md` | `f9c31ba15747357311cb961954d8092b57f047ccdaa544a314695ac1c2f99d9b` |
+| `resilience_sequence.json` | `71296d9a2472ffc3b50fe11bd78a3eac4da07b98314244bf5611da732cacc671` |
+
+No unexpected results occurred. No regression, missing finding, unexpected
+finding, decision-compliance failure, or CDR-invariant violation was observed.
+This remains a controlled, self-constructed synthetic corpus, not an independent
+adversarial benchmark; `ALLOW` does not establish that a document is benign; and
+this phase confirms — rather than merely asserts — that the presentation/
+usability-oriented v1.1.2 UI-polish candidate left detection, policy, and CDR
+semantics unchanged. The candidate commit above is a **release candidate**, not
+the tagged `v1.1.2` release; tagging and the canonical report-screenshot
+regeneration are deliberately deferred to a later, separate step.

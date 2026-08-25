@@ -1,4 +1,4 @@
-"""Capture the curated DocGuard v1.1.1 report/defense screenshot set.
+"""Capture the curated DocGuard v1.1.2 report/defense screenshot set.
 
 Post-release tooling only. Does not modify DocGuard's application code, security
 controls, policy, or analyzers. Drives a real, running, unmodified DocGuard instance
@@ -35,7 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = REPO_ROOT / "docs" / "screenshots" / "report"
 MANIFEST_PATH = REPO_ROOT / ".report-venv" / "instance" / "seed_manifest.json"
 
-EXPECTED_APPLICATION_VERSION = "1.1.1"
+EXPECTED_APPLICATION_VERSION = "1.1.2"
 
 DESKTOP_VIEWPORT = {"width": 1440, "height": 900}
 MOBILE_VIEWPORT = {"width": 375, "height": 812}

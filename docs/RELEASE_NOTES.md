@@ -2,7 +2,84 @@
 
 This file is cumulative release history. Earlier sections are preserved exactly as
 originally written — read each as a record of that release, not the current one.
-Current release: **1.1.1** (this section).
+Current release: **1.1.2** (this section).
+
+---
+
+# DocGuard 1.1.2 Release Notes
+
+Patch release: **presentation/usability patch for the operator web UI**. No
+detection, policy, authentication, authorization, or CDR semantic changes. Policy
+stays `1.0.2`, unchanged by this release.
+
+## Release identity
+
+- Application release version: **1.1.2** (`pyproject.toml`, FastAPI app metadata) —
+  bumped from `1.1.1`.
+- Policy version: **1.0.2**, fingerprint
+  `c6d18b6f67b79a91151567c99c8844c741820935ab9d4ad32bb131a30412469b` — unchanged.
+- Evaluated application candidate: `02e6ef48ad96232dffaef05ab6beb41eb18e2847`.
+- Final release/evidence commit: this commit (`git log -1` / `git show v1.1.2
+  --no-patch`).
+
+## What changed
+
+Purely presentation/usability work on the operator web UI (templates, static
+CSS/JS) plus narrow, type-only tooling cleanup:
+
+- **Format-neutral Sanitization (CDR) presentation.** The scan-detail
+  "Sanitization (CDR)" panel no longer implies PDF-specific wording for
+  non-PDF sources (Office, ZIP), no longer points an ineligible source at a
+  sanitization action that doesn't exist for it, and — corrected during
+  visual review before tagging — no longer tells a release-eligible (ALLOW)
+  scan that "the original document must remain unavailable" (a real
+  contradiction with its own "Release eligible: Yes" field). A
+  release-eligible source now reads "This scan is release-eligible under the
+  current policy. No sanitization action is available."; a BLOCK source keeps
+  its existing no-bypass wording; a genuinely CDR-eligible source keeps its
+  existing actionable panel and controls unchanged.
+- **Humanized technical metadata.** Finding metadata keys/values on the
+  scan-detail page and the evidence report (e.g. `behavior_indicators`,
+  `[]`, `['OpenAction']`, `True`/`False`) now render as readable text
+  ("Behavior indicators", "None observed", "OpenAction", "Yes"/"No") without
+  ever discarding the underlying value or renaming a finding code.
+- **Decision-evidence hierarchy.** A small "Why this decision" label now sits
+  directly above the persisted reason list on the scan-detail decision panel.
+- **Audit-detail presentation.** The audit table's Details column renders as
+  compact, wrapping monospace key/value chips instead of a two-column
+  definition list; the OUTCOME column and every persisted value are
+  unchanged.
+- **Quieter inert-sanitization state** and a **confidence-neutral
+  lexical-evidence note color** (no longer borrowing QUARANTINE's severity
+  color for a bounded lexical caveat that carries no severity of its own).
+- **Compact, zero-JS-dependent mobile navigation** (`<details>`/`<summary>`
+  disclosure for secondary nav destinations) and a **mobile dashboard
+  horizontal-overflow fix**: the "Needs attention" and "Decision activity"
+  panels could force the page wider than a 375px viewport (a CSS Grid
+  auto-minimum-size "blowout" from a track missing `minmax(0, 1fr)`); fixed
+  with no markup change and no visual change at any width above the affected
+  media query.
+- **Strict-mypy tooling cleanup** in tracked post-release screenshot/validation
+  scripts (type annotations, narrowed JSON-value handling, a Playwright
+  stub-availability override) — no behavior change.
+
+## What did not change
+
+Detection, policy, CDR processing, authentication, authorization, the database
+schema, API contracts, audit persistence semantics, release eligibility, and
+risk scoring are all unchanged. This is **not** a security-detection
+improvement and claims no new malware coverage — see the Phase 11E
+revalidation in `docs/EVALUATION.md` Part D, which reran the identical frozen
+59-case corpus against the final candidate above and reproduced every
+Phase 11D functional metric exactly (decision compliance, risky-case recall,
+finding recall, benign ALLOW/escalation, fail-secure, completeness
+distribution, and CDR outcomes) — only latency varied, and that variation is
+attributed to host/session conditions, not a controlled measurement.
+
+## Classification
+
+A **presentation/usability patch**, not a feature or security release: no
+analyzer, policy, YARA, or CDR code path changed.
 
 ---
 
