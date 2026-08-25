@@ -1,3 +1,4 @@
+<img width="1024" height="1024" alt="doc" src="https://github.com/user-attachments/assets/25858a1d-0260-4f2e-8b3f-190fdfd8e603" />
 # DocGuard
 
 **An isolated and explainable security gateway for untrusted business documents.**
