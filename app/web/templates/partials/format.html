@@ -1,0 +1,30 @@
+{#
+  Presentation-only humanization for descriptive finding/audit metadata.
+
+  These macros never reinterpret or alter persisted values — they only change
+  how a snake_case key or a Python-ish value (list/bool/None) is rendered as
+  text. Finding codes (e.g. PDF_JAVASCRIPT) and other technical identifiers
+  must never be passed through humanize_key/humanize_value.
+#}
+{% macro humanize_key(key) -%}
+{{- key.replace('_', ' ')|capitalize -}}
+{%- endmacro %}
+
+{% macro humanize_value(value) -%}
+{%- if value is sameas true -%}
+Yes
+{%- elif value is sameas false -%}
+No
+{%- elif value is none -%}
+{{- '—' -}}
+{%- elif value is iterable and value is not string and value is not mapping -%}
+{%- set items = value|list -%}
+{%- if items|length == 0 -%}
+None observed
+{%- else -%}
+{{- items|map('string')|join(', ') -}}
+{%- endif -%}
+{%- else -%}
+{{- value -}}
+{%- endif -%}
+{%- endmacro %}

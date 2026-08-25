@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 import httpx
-from playwright.sync_api import Browser, Page, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Page, sync_playwright
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = REPO_ROOT / "docs" / "screenshots" / "report"
@@ -102,10 +102,33 @@ def _verify_release_identity(base_url: str) -> None:
 def _load_seed_manifest() -> dict[str, object]:
     if not MANIFEST_PATH.exists():
         raise SystemExit(f"seed manifest not found at {MANIFEST_PATH} — run seed_data.py first")
-    return json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise SystemExit(f"seed manifest at {MANIFEST_PATH} must contain a JSON object")
+    return data
 
 
-def _authenticated_context(browser: Browser, base_url: str, username: str, password: str):
+def _manifest_scan_ids(source: dict[str, object], key: str) -> dict[str, str]:
+    """Narrow one already-trusted manifest field (written by seed_data.py in the
+    same tooling family) to the `dict[str, str]` shape every caller here assumes."""
+    value = source[key]
+    if not isinstance(value, dict):
+        raise SystemExit(f"seed manifest field {key!r} must be an object, got {type(value)!r}")
+    return value
+
+
+def _manifest_str_list(source: dict[str, object], key: str) -> list[str]:
+    """Narrow one already-trusted manifest field to the `list[str]` shape every
+    caller here assumes."""
+    value = source[key]
+    if not isinstance(value, list):
+        raise SystemExit(f"seed manifest field {key!r} must be a list, got {type(value)!r}")
+    return value
+
+
+def _authenticated_context(
+    browser: Browser, base_url: str, username: str, password: str
+) -> tuple[BrowserContext, Page]:
     context = browser.new_context(
         viewport=DESKTOP_VIEWPORT,
         device_scale_factor=DEVICE_SCALE_FACTOR,
@@ -272,8 +295,8 @@ def main() -> int:
     _verify_release_identity(base_url)
 
     manifest = _load_seed_manifest()
-    scans = manifest["scans"]
-    queue_files = manifest["queue_fixture_files"]
+    scans = _manifest_scan_ids(manifest, "scans")
+    queue_files = _manifest_str_list(manifest, "queue_fixture_files")
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()

@@ -10,6 +10,7 @@
 </head>
 <body class="report-body">
 {% import "partials/icons.html" as icons %}
+{% import "partials/format.html" as format %}
 {% set decision_icon = {'ALLOW': icons.icon_allow, 'REVIEW': icons.icon_review, 'QUARANTINE': icons.icon_hold, 'BLOCK': icons.icon_block} %}
 {% set decision_next = {
   'ALLOW': 'This document may be released according to policy. ALLOW is not proof the document is benign.',
@@ -95,7 +96,7 @@
           <dl class="metadata report-finding-metadata">
             <dt>Finding code</dt><dd><code>{{ finding.code }}</code></dd>
             {% if contribution %}<dt>Risk contribution</dt><dd>+{{ contribution.contribution }}</dd>{% endif %}
-            {% for key, value in finding.metadata.items() %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+            {% for key, value in finding.metadata.items() %}<dt>{{ format.humanize_key(key) }}</dt><dd>{{ format.humanize_value(value) }}</dd>{% endfor %}
           </dl>
           {% endif %}
         </div>

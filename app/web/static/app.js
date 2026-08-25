@@ -403,7 +403,7 @@ document.querySelectorAll('.cdr-form').forEach((candidate) => {
       });
       const payload = await response.json();
       if (!response.ok || payload.approved !== true) {
-        throw new Error('This document is not eligible for PDF sanitization.');
+        throw new Error('This document is not eligible for sanitization (CDR).');
       }
       window.location.reload();
     } catch (error) {

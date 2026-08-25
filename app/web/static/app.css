@@ -565,8 +565,24 @@ input:disabled { background: var(--surface-sunken); cursor: not-allowed; }
 /* "Why" reasons live inside the decision panel itself — the human rationale is
    part of the same reveal, not a second equal-weight card competing for
    attention. */
-.decision-reasons { display: grid; gap: 6px; margin: var(--space-3) 0 0; padding-left: 1.1rem; }
+.decision-why-label {
+  margin: var(--space-3) 0 4px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.decision-reasons { display: grid; gap: 6px; margin: 0; padding-left: 1.1rem; }
 .decision-reasons li { font-size: .92rem; }
+
+/* Quieter treatment for an inert/ineligible sanitization state — a single
+   muted sentence, never the same full bordered action card used when CDR is
+   actually available (see .panel above the CDR form/lineage markup). */
+.quiet-note { margin-bottom: var(--space-5); padding-top: var(--space-1); }
+.quiet-note .text-label { color: var(--ink-muted); text-transform: uppercase; letter-spacing: .04em; font-size: .72rem; margin-bottom: 4px; }
+.quiet-note .muted { margin: 0; font-size: .92rem; }
+.quiet-note .disclosure-compact { margin-top: var(--space-2); }
 
 /* Severity chips are a plain compact pill — no icon slot, lighter-weight than
    a Decision badge, since severity is a supporting signal, not the headline. */
@@ -711,6 +727,27 @@ td .badge { white-space: nowrap; }
 .reason-list { display: grid; gap: var(--space-3); padding: 0; list-style: none; }
 .reason-list li { display: grid; gap: 3px; padding-bottom: var(--space-3); border-bottom: 1px solid var(--border); }
 
+/* Audit "Details" cell — compact, wrapping monospace key/value chips instead
+   of a full two-column definition-list grid, so a handful of technical pairs
+   (sanitizer_version, derived_decision, ...) read inline on desktop and wrap
+   cleanly in the stacked mobile row without ever truncating a value. */
+.audit-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+.audit-detail-chips li {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.audit-detail-chips code { color: var(--ink-muted); font-size: inherit; }
+
 /* Dense evidence rows: severity chip, then human title first, technical finding
    CODE moved out of the header entirely (it lives inside the technical-details
    disclosure). A hairline divider between rows replaces a bordered box per row. */
@@ -729,7 +766,7 @@ td .badge { white-space: nowrap; }
 .finding-meta { color: var(--ink-faint); font-size: .82rem; }
 .finding-meta .evidence-tag { margin-left: 2px; }
 .finding-row[data-confidence="lexical"] { background: var(--surface-sunken); border-radius: var(--radius-md); padding-left: var(--space-3); padding-right: var(--space-3); }
-.evidence-note { color: var(--quarantine-ink); }
+.evidence-note { color: var(--ink-muted); }
 
 /* Progressive-disclosure foundation: native <details>/<summary>. Technical evidence
    reads as secondary material — quieter surface, monospace-forward, closed by
@@ -884,6 +921,45 @@ details.disclosure-compact > .disclosure-body { padding: var(--space-3) 0 0; bor
 .topbar nav a .icon { width: 18px; height: 18px; }
 .topbar nav a:hover { color: var(--on-chrome); background: var(--chrome-raised); }
 .topbar nav a[aria-current="page"] { color: var(--on-chrome); background: var(--accent); font-weight: 650; }
+
+/* Nav secondary destinations (Quarantine/Sanitized/Audit): flat inline items on
+   desktop; the identical links are duplicated inside `.nav-more` below and the
+   two sets are swapped by media query, not by JS, so both are fully functional
+   with scripting disabled — a native <details>/<summary> disclosure needs no
+   script at all. `.nav-secondary` uses `display: contents` so its <a> children
+   remain direct flex items of `.topbar nav` on desktop. */
+.nav-secondary { display: contents; }
+.nav-more { display: none; position: relative; }
+.nav-more > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 6px 14px;
+  color: var(--on-chrome-muted);
+  border-radius: var(--radius-pill);
+  font-size: .89rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.nav-more > summary::-webkit-details-marker { display: none; }
+.nav-more > summary:hover,
+.nav-more[open] > summary { color: var(--on-chrome); background: var(--chrome-raised); }
+.nav-more-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--chrome);
+  border: 1px solid var(--chrome-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .4);
+}
 
 .session-cluster { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
 .operator-identity { display: flex; align-items: center; gap: 6px; color: var(--on-chrome-muted); font-size: .86rem; }
@@ -1211,6 +1287,11 @@ details.disclosure-editorial > .disclosure-body {
 
 @media (max-width: 860px) {
   .topbar { padding: var(--space-3) var(--space-4); }
+  /* Mobile nav compaction: Dashboard/Documents stay directly visible; the three
+     secondary destinations collapse into the "More" disclosure so the topbar
+     no longer eats a second wrapped row of vertical space before content. */
+  .nav-secondary { display: none; }
+  .nav-more { display: inline-block; }
   .session-cluster { width: 100%; justify-content: space-between; margin-left: 0; order: 3; }
   .grid-two, .grid-three { grid-template-columns: 1fr; }
   .shell, .public-main { width: min(100% - 24px, var(--content-width)); margin-top: var(--space-5); }
@@ -1263,6 +1344,16 @@ details.disclosure-editorial > .disclosure-body {
     text-align: left;
     margin-right: var(--space-3);
   }
+  /* The Details cell can hold several key/value chips — stack its label above
+     the chips (rather than the label-left/value-right row every other cell
+     uses) so multiple pairs wrap left-aligned instead of being squeezed
+     against the right edge of a space-between row. */
+  .table-wrap td[data-label="Details"] {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .table-wrap td[data-label="Details"]::before { margin-right: 0; margin-bottom: 4px; }
 }
 
 @media (max-width: 560px) {

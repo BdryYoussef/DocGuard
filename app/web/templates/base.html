@@ -19,9 +19,19 @@
     <nav aria-label="Primary navigation">
       <a href="/app"{% if active == 'dashboard' %} aria-current="page"{% endif %}>{{ icons.icon_dashboard("icon") }}Dashboard</a>
       <a href="/app/scans"{% if active == 'scans' %} aria-current="page"{% endif %}>{{ icons.icon_documents("icon") }}Documents</a>
-      <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>{{ icons.icon_quarantine("icon") }}Quarantine</a>
-      <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>{{ icons.icon_sanitized("icon") }}Sanitized</a>
-      <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>{{ icons.icon_audit("icon") }}Audit</a>
+      <span class="nav-secondary">
+        <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>{{ icons.icon_quarantine("icon") }}Quarantine</a>
+        <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>{{ icons.icon_sanitized("icon") }}Sanitized</a>
+        <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>{{ icons.icon_audit("icon") }}Audit</a>
+      </span>
+      <details class="nav-more">
+        <summary>More</summary>
+        <div class="nav-more-panel">
+          <a href="/app/quarantine"{% if active == 'quarantine' %} aria-current="page"{% endif %}>{{ icons.icon_quarantine("icon") }}Quarantine</a>
+          <a href="/app/artifacts"{% if active == 'artifacts' %} aria-current="page"{% endif %}>{{ icons.icon_sanitized("icon") }}Sanitized</a>
+          <a href="/app/audit"{% if active == 'audit' %} aria-current="page"{% endif %}>{{ icons.icon_audit("icon") }}Audit</a>
+        </div>
+      </details>
     </nav>
     <div class="session-cluster">
       <span class="operator-identity">{{ icons.icon_operator("icon") }}<span>{{ principal.username }}</span></span>

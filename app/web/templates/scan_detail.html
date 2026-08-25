@@ -1,11 +1,12 @@
 {% extends "base.html" %}{% block title %}Scan {{ scan.id[:8] }} · DocGuard{% endblock %}
 {% block content %}
 {% import "partials/icons.html" as icons %}
+{% import "partials/format.html" as format %}
 {% set decision_icon = {'ALLOW': icons.icon_allow, 'REVIEW': icons.icon_review, 'QUARANTINE': icons.icon_hold, 'BLOCK': icons.icon_block} %}
 {% set decision_next = {
   'ALLOW': 'This document may be released according to policy. ALLOW is not proof the document is benign.',
   'REVIEW': 'An operator should examine the findings below before this document is released.',
-  'QUARANTINE': 'The original document must remain unavailable. Check whether a sanitized derivative is possible below.',
+  'QUARANTINE': 'The original document must remain unavailable.',
   'BLOCK': 'Policy prohibits release. BLOCK cannot be overridden by an operator.'
 } %}
 <div class="page-heading"><div><h1 class="text-page-title">{{ scan.display_filename }}</h1><p class="mono text-meta">{{ scan.id }}</p></div><a class="button button-quiet" href="/app/scans/{{ scan.id }}/report">{{ icons.icon_document("icon") }}Evidence report</a></div>
@@ -15,8 +16,9 @@
   <div>
     <h2>{{ result.decision }}</h2>
     <p class="decision-meaning">{{ decision_messages[result.decision] }}</p>
-    <p class="decision-next">{{ decision_next[result.decision] }}</p>
+    <p class="decision-next">{{ decision_next[result.decision] }}{% if result.decision == 'QUARANTINE' and cdr_eligibility.eligible %} A sanitized derivative may be available below.{% endif %}</p>
     {% if result.decision_reasons %}
+    <p class="decision-why-label">Why this decision</p>
     <ul class="decision-reasons">
       {% for reason in result.decision_reasons %}<li>{{ reason.explanation }}</li>{% endfor %}
     </ul>
@@ -55,7 +57,7 @@
           <dl class="metadata">
             <dt>Finding code</dt><dd><code>{{ finding.code }}</code></dd>
             {% if contribution %}<dt>Risk contribution</dt><dd>+{{ contribution.contribution }}</dd>{% endif %}
-            {% for key, value in finding.metadata.items() %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+            {% for key, value in finding.metadata.items() %}<dt>{{ format.humanize_key(key) }}</dt><dd>{{ format.humanize_value(value) }}</dd>{% endfor %}
           </dl>
         </div></details>
         {% endif %}
@@ -66,8 +68,8 @@
   {% else %}<div class="empty-state">{{ icons.icon_allow("icon") }}<strong>No modeled risky characteristics were reported</strong></div>{% endif %}
 </section>
 
-<section class="panel"><h2 class="text-section-title">PDF sanitization</h2>
-  {% if artifact and derived %}
+{% if artifact and derived %}
+<section class="panel"><h2 class="text-section-title">Sanitization (CDR)</h2>
   <p class="text-body-secondary">The original stays exactly as received. This is a separately reconstructed, fully re-analyzed derivative.</p>
   <div class="lineage">
     <div class="lineage-step" data-role="source"><span class="text-label">Original source</span><strong class="badge badge-{{ result.decision|lower }}">{{ result.decision }}</strong><span class="text-body-secondary">Contained — remains unavailable for download</span></div>
@@ -75,13 +77,22 @@
     <div class="lineage-step" data-role="derived"><span class="text-label">Derived sanitized artifact</span><strong class="badge badge-allow">{{ derived.decision }}</strong><span class="text-body-secondary">Fully re-analyzed after reconstruction</span></div>
   </div>
   <a class="button button-primary" href="/api/v1/artifacts/{{ artifact.id }}/download">{{ icons.icon_sanitized("icon") }}Download approved sanitized PDF</a>
-  {% elif cdr_eligibility.eligible %}
+</section>
+{% elif cdr_eligibility.eligible %}
+<section class="panel"><h2 class="text-section-title">Sanitization (CDR)</h2>
   <p class="text-body-secondary">The original stays contained. Trusted eligibility permits raster reconstruction into a new derivative document, followed by mandatory full re-analysis before anything is released.</p>
   <form class="cdr-form" data-scan-id="{{ scan.id }}" data-csrf-token="{{ csrf_token }}"><button type="submit" class="button button-primary">{{ icons.icon_sanitized("icon") }}Generate sanitized PDF</button><p class="hint" aria-live="polite"></p></form>
-  {% else %}
-  <p class="muted">This document is not eligible for PDF sanitization.{% if result.decision == 'BLOCK' %} A BLOCK decision has no sanitization path — reconstruction cannot bypass a hard policy violation.{% endif %}</p>
-  {% if cdr_eligibility.reason_codes %}<details class="disclosure disclosure-compact"><summary>Why not eligible</summary><div class="disclosure-body"><ul class="reason-list">{% for code in cdr_eligibility.reason_codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul></div></details>{% endif %}
-  {% endif %}
 </section>
+{% else %}
+<section class="quiet-note">
+  <p class="text-label">Sanitization (CDR)</p>
+  {% if result.decision == 'BLOCK' %}
+  <p class="muted">Policy prohibits release. A BLOCK decision has no sanitization path — reconstruction cannot bypass a hard policy violation.</p>
+  {% else %}
+  <p class="muted">The original document must remain unavailable.</p>
+  {% endif %}
+  {% if cdr_eligibility.reason_codes %}<details class="disclosure disclosure-compact"><summary>Why not eligible</summary><div class="disclosure-body"><ul class="reason-list">{% for code in cdr_eligibility.reason_codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul></div></details>{% endif %}
+</section>
+{% endif %}
 <p class="disclaimer">DocGuard's risk score is a deterministic policy score, not a probability that a file is malicious. ALLOW is not proof that a document is benign. CDR reduces active document functionality by reconstructing visual content. It does not prove the output is benign. The CDR output is re-analyzed before approval.</p>
 {% endblock %}

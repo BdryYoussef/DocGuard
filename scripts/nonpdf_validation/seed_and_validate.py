@@ -37,8 +37,9 @@ import httpx
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
+from app.models.domain import Decision as EvalDecision  # noqa: E402
 from evaluation.corpus import CASES, materialize_case  # noqa: E402
-from evaluation.models import Decision as EvalDecision  # noqa: E402
+from evaluation.models import EvaluationCase  # noqa: E402
 
 FIXTURES_DIR = REPO_ROOT / ".report-venv" / "instance" / "nonpdf-fixtures"
 RESULTS_PATH = REPO_ROOT / ".report-venv" / "instance" / "nonpdf_validation_results.json"
@@ -104,7 +105,7 @@ def _upload(
     return payload
 
 
-def _compare(case, payload: dict[str, object]) -> dict[str, object]:
+def _compare(case: EvaluationCase, payload: dict[str, object]) -> dict[str, object]:
     """Mirror evaluation/runner.py::_result_from_payload's pass/fail semantics exactly."""
     findings = payload.get("findings")
     actual_codes = (
@@ -179,7 +180,9 @@ def main() -> int:
             result = _compare(case, payload)
             results.append(result)
             status = "PASS" if result["PASS"] else "**FAIL**"
-            print(f"[{status}] {case_id}: {case.filename} -> decision={result['observed_decision']}")
+            print(
+                f"[{status}] {case_id}: {case.filename} -> decision={result['observed_decision']}"
+            )
 
         # Audit trail check: confirm SCAN_UPLOAD_REQUESTED events exist for this run.
         audit_response = client.get("/api/v1/audit-events", params={"page_size": 100})
@@ -209,7 +212,10 @@ def main() -> int:
     }
     RESULTS_PATH.write_text(json.dumps(output, indent=2), encoding="utf-8")
     print(f"\nwrote {RESULTS_PATH}")
-    print(f"audit check: {audit_event_count}/{len(results)} matched SCAN_UPLOAD_REQUESTED events found")
+    print(
+        f"audit check: {audit_event_count}/{len(results)} matched "
+        "SCAN_UPLOAD_REQUESTED events found"
+    )
     print(f"all_passed: {output['all_passed']}")
     return 0 if output["all_passed"] else 1
 

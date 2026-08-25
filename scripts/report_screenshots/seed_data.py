@@ -129,9 +129,7 @@ def main() -> int:
         # Exercise the real approved-artifact download endpoint once, so the
         # audit trail includes a genuine ARTIFACT_DOWNLOADED event alongside
         # upload/CDR activity, not just repeated logins.
-        download_response = client.get(
-            f"/api/v1/artifacts/{cdr_result['artifact_id']}/download"
-        )
+        download_response = client.get(f"/api/v1/artifacts/{cdr_result['artifact_id']}/download")
         if download_response.status_code != 200:
             raise SystemExit(
                 f"approved-artifact download failed: {download_response.status_code} "
@@ -145,22 +143,23 @@ def main() -> int:
         write_javascript_pdf(QUEUE_FIXTURES_DIR / "contrat-partenariat.pdf")
         (QUEUE_FIXTURES_DIR / "piece-jointe-suspecte.pdf").write_bytes(block_bytes)
 
-    manifest = {
+    scans: dict[str, object] = {
+        "allow": allow_scan["scan_id"],
+        "quarantine_risky": quarantine_risky_scan["scan_id"],
+        "quarantine_fallback": quarantine_fallback_scan["scan_id"],
+        "block": block_scan["scan_id"],
+        "cdr_source": quarantine_risky_scan["scan_id"],
+        "cdr_derived": cdr_result["derived_scan_id"],
+        "cdr_artifact_id": cdr_result["artifact_id"],
+    }
+    manifest: dict[str, object] = {
         "base_url": base_url,
-        "scans": {
-            "allow": allow_scan["scan_id"],
-            "quarantine_risky": quarantine_risky_scan["scan_id"],
-            "quarantine_fallback": quarantine_fallback_scan["scan_id"],
-            "block": block_scan["scan_id"],
-            "cdr_source": quarantine_risky_scan["scan_id"],
-            "cdr_derived": cdr_result["derived_scan_id"],
-            "cdr_artifact_id": cdr_result["artifact_id"],
-        },
+        "scans": scans,
         "queue_fixture_files": sorted(str(p) for p in QUEUE_FIXTURES_DIR.glob("*.pdf")),
     }
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"seed complete: {MANIFEST_PATH}")
-    for key, value in manifest["scans"].items():
+    for key, value in scans.items():
         print(f"  {key}: {value}")
     return 0
 

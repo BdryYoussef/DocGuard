@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docguard"
-version = "1.1.1"
+version = "1.1.2"
 description = "An isolated and explainable security gateway for untrusted business documents"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -66,4 +66,14 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["defusedxml.*", "olefile", "oletools.*", "pymupdf", "yara"]
+ignore_missing_imports = true
+
+# Playwright ships its own inline type hints (py.typed), but it is installed only
+# in the separate, throwaway `.report-venv` used to drive a real browser for
+# screenshot-capture tooling (scripts/*/capture.py) — never in `.python-deps` /
+# `.worker-deps`, which is what the documented `mypy --strict` invocation's
+# PYTHONPATH scans. Its stubs are therefore genuinely unreachable in that gate's
+# environment; this does not silence any error inside our own code.
+[[tool.mypy.overrides]]
+module = "playwright.*"
 ignore_missing_imports = true
